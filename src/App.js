@@ -231,33 +231,83 @@ function AuthForm({ onAuth }) {
   return (
     <div style={{
       minHeight: "100vh",
+      width: "100vw",
+      position: "relative",
+      overflow: "hidden",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "linear-gradient(135deg, #e3f0ff 0%, #f9fbfc 100%)"
     }}>
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          objectFit: "cover",
+          zIndex: 0,
+        }}
+      >
+        <source src="/background.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Overlay (optional, for better contrast) */}
+      <div style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(240, 248, 255, 0.55)", // light overlay
+        zIndex: 1,
+        pointerEvents: "none"
+      }} />
+
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         style={{
-          background: "#fff",
-          padding: "40px 32px 32px 32px",
-          borderRadius: 18,
-          boxShadow: "0 8px 32px #cfd8dc",
-          minWidth: 350,
-          maxWidth: 380,
+          position: "relative",
+          zIndex: 2,
+          background: "rgba(255,255,255,0.7)",
+          backdropFilter: "blur(12px)",
+          border: "1.5px solid #e3e8f7",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.12)",
+          borderRadius: 20,
+          padding: "38px 30px 28px 30px",
+          minWidth: 340,
+          maxWidth: 370,
           width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          fontFamily: "Inter, Nunito, Segoe UI, Arial, sans-serif"
         }}
       >
+        {/* Title above Welcome Back */}
+  <div style={{
+    fontSize: 25,
+    fontWeight: 600,
+    color: "#4f8cff",
+    marginBottom: 8,
+    letterSpacing: 1,
+    textAlign: "center"
+  }}>
+    Smart Rye Automatics
+  </div>
         <h2 style={{
-          color: "#1976d2",
+          color: "#22223b",
           fontWeight: 800,
-          marginBottom: 24,
-          fontSize: 28,
-          letterSpacing: 1,
-          fontFamily: "Segoe UI, Arial, sans-serif"
+          marginBottom: 22,
+          fontSize: 27,
+          letterSpacing: 1.2,
         }}>
           {isLogin ? "Welcome Back" : "Create Account"}
         </h2>
@@ -271,64 +321,92 @@ function AuthForm({ onAuth }) {
             width: "100%",
             textAlign: "center",
             fontSize: 15,
-            fontWeight: 500
+            fontWeight: 500,
+            border: "1px solid #ffd6d6"
           }}>
             {error}
           </div>
         )}
-        <input
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="Email"
-          type="email"
-          style={{
-            width: "100%",
-            padding: "14px 12px",
-            borderRadius: 8,
-            border: "1px solid #b0bec5",
-            fontSize: 17,
-            background: "#f5f7fa",
-            marginBottom: 18,
-            outline: "none",
-            transition: "border 0.2s"
-          }}
-          autoFocus
-          required
-        />
-        <input
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder="Password"
-          type="password"
-          style={{
-            width: "100%",
-            padding: "14px 12px",
-            borderRadius: 8,
-            border: "1px solid #b0bec5",
-            fontSize: 17,
-            background: "#f5f7fa",
-            marginBottom: 18,
-            outline: "none",
-            transition: "border 0.2s"
-          }}
-          required
-        />
+        <div style={{ width: "100%", position: "relative", marginBottom: 18 }}>
+          <input
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="Email"
+            type="email"
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "14px 12px 14px 40px",
+              borderRadius: 12,
+              border: "1.5px solid #e3e8f7",
+              fontSize: 16,
+              background: "#f7faff",
+              outline: "none",
+              transition: "border 0.2s",
+              boxShadow: "0 1px 2px #f0f4fa"
+            }}
+            autoFocus
+            required
+          />
+          {/* Email icon (SVG) */}
+          <span style={{
+            position: "absolute",
+            left: 12,
+            top: "50%",
+            transform: "translateY(-50%)",
+            opacity: 0.5
+          }}>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm0 0l8 8 8-8" stroke="#22223b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </span>
+        </div>
+        <div style={{ width: "100%", position: "relative", marginBottom: 18 }}>
+          <input
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "14px 12px 14px 40px",
+              borderRadius: 12,
+              border: "1.5px solid #e3e8f7",
+              fontSize: 16,
+              background: "#f7faff",
+              outline: "none",
+              transition: "border 0.2s",
+              boxShadow: "0 1px 2px #f0f4fa"
+            }}
+            required
+          />
+          {/* Lock icon (SVG) */}
+          <span style={{
+            position: "absolute",
+            left: 12,
+            top: "50%",
+            transform: "translateY(-50%)",
+            opacity: 0.5
+          }}>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="8" rx="2" stroke="#22223b" strokeWidth="1.5"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="#22223b" strokeWidth="1.5"/></svg>
+          </span>
+        </div>
         <button
           type="submit"
           disabled={loading}
           style={{
             width: "100%",
             padding: "12px 0",
-            background: "#1976d2",
+            background: loading ? "#bfc9d1" : "linear-gradient(90deg, #4f8cff 0%, #6ed0fa 100%)",
             color: "#fff",
             border: "none",
-            borderRadius: 8,
+            borderRadius: 12,
             fontWeight: 700,
             fontSize: 17,
             marginBottom: 12,
             cursor: loading ? "not-allowed" : "pointer",
             boxShadow: "0 2px 8px #e3e3e3",
-            transition: "background 0.2s"
+            transition: "background 0.2s, box-shadow 0.2s",
+            letterSpacing: 0.5
           }}
         >
           {loading ? (isLogin ? "Logging in..." : "Signing up...") : (isLogin ? "Login" : "Sign Up")}
@@ -339,7 +417,7 @@ function AuthForm({ onAuth }) {
           style={{
             background: "none",
             border: "none",
-            color: "#1976d2",
+            color: "#4f8cff",
             fontWeight: 600,
             fontSize: 15,
             cursor: "pointer",
@@ -351,28 +429,29 @@ function AuthForm({ onAuth }) {
           {isLogin ? "Need an account? Sign Up" : "Have an account? Login"}
         </button>
         <div
-    style={{
-      marginTop: 32,
-      width: "100%",
-      borderTop: "1px solid #e0e0e0",
-      paddingTop: 18,
-      textAlign: "center",
-      color: "#1976d2",
-      fontWeight: 700,
-      fontSize: 16,
-      letterSpacing: 1,
-      fontFamily: "Segoe UI, Arial, sans-serif"
-    }}
-  >
-    <span style={{ display: "block", color: "#888", fontWeight: 500, fontSize: 14, marginBottom: 2 }}>
-      Application developed by
-    </span>
-    Ivan Mercado, <span style={{ color: "#1976d2", fontWeight: 700 }}>BSCpE</span>
-  </div>
-</form>
+          style={{
+            marginTop: 32,
+            width: "100%",
+            borderTop: "1px solid #e0e0e0",
+            paddingTop: 18,
+            textAlign: "center",
+            color: "#22223b",
+            fontWeight: 700,
+            fontSize: 15,
+            letterSpacing: 1,
+            fontFamily: "inherit"
+          }}
+        >
+          <span style={{ display: "block", color: "#888", fontWeight: 500, fontSize: 13, marginBottom: 2 }}>
+            Application developed by
+          </span>
+          Ivan Mercado, <span style={{ color: "#4f8cff", fontWeight: 700 }}>BSCpE</span>
+        </div>
+      </form>
     </div>
   );
 }
+
 
 function SupplierList({ suppliers, onEdit, onDelete, editIndex, editForm, setEditForm, setEditIndex, expandedRows, setExpandedRows }) {
   const handleEditChange = (e) => {
