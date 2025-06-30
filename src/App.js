@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { db } from './firebase';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import {
   collection,
   addDoc,
   onSnapshot,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  query,      // <-- add this
+  where       // <-- add this
 } from 'firebase/firestore';
 
 const MESSAGING_APPS = [
@@ -196,6 +199,159 @@ function AddSupplier({ onAdd }) {
         Add Supplier
       </button>
     </form>
+  );
+}
+
+function AuthForm({ onAuth }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const auth = getAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      let userCredential;
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      }
+      onAuth(userCredential.user);
+    } catch (err) {
+      setError(err.message.replace("Firebase: ", ""));
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "linear-gradient(135deg, #e3f0ff 0%, #f9fbfc 100%)"
+    }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          background: "#fff",
+          padding: "40px 32px 32px 32px",
+          borderRadius: 18,
+          boxShadow: "0 8px 32px #cfd8dc",
+          minWidth: 350,
+          maxWidth: 380,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <h2 style={{
+          color: "#1976d2",
+          fontWeight: 800,
+          marginBottom: 24,
+          fontSize: 28,
+          letterSpacing: 1,
+          fontFamily: "Segoe UI, Arial, sans-serif"
+        }}>
+          {isLogin ? "Welcome Back" : "Create Account"}
+        </h2>
+        {error && (
+          <div style={{
+            background: "#ffeaea",
+            color: "#d32f2f",
+            padding: "10px 16px",
+            borderRadius: 8,
+            marginBottom: 16,
+            width: "100%",
+            textAlign: "center",
+            fontSize: 15,
+            fontWeight: 500
+          }}>
+            {error}
+          </div>
+        )}
+        <input
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="Email"
+          type="email"
+          style={{
+            width: "100%",
+            padding: "14px 12px",
+            borderRadius: 8,
+            border: "1px solid #b0bec5",
+            fontSize: 17,
+            background: "#f5f7fa",
+            marginBottom: 18,
+            outline: "none",
+            transition: "border 0.2s"
+          }}
+          autoFocus
+          required
+        />
+        <input
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Password"
+          type="password"
+          style={{
+            width: "100%",
+            padding: "14px 12px",
+            borderRadius: 8,
+            border: "1px solid #b0bec5",
+            fontSize: 17,
+            background: "#f5f7fa",
+            marginBottom: 18,
+            outline: "none",
+            transition: "border 0.2s"
+          }}
+          required
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: "12px 0",
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: 17,
+            marginBottom: 12,
+            cursor: loading ? "not-allowed" : "pointer",
+            boxShadow: "0 2px 8px #e3e3e3",
+            transition: "background 0.2s"
+          }}
+        >
+          {loading ? (isLogin ? "Logging in..." : "Signing up...") : (isLogin ? "Login" : "Sign Up")}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setIsLogin(!isLogin); setError(""); }}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#1976d2",
+            fontWeight: 600,
+            fontSize: 15,
+            cursor: "pointer",
+            marginTop: 2,
+            marginBottom: 0,
+            textDecoration: "underline"
+          }}
+        >
+          {isLogin ? "Need an account? Sign Up" : "Have an account? Login"}
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -549,16 +705,32 @@ function App() {
   const [expandedRows, setExpandedRows] = useState([]);
   const location = useLocation();
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return unsubscribe;
+  }, []);
+  
+
   // Real-time Firestore listener
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'suppliers'), (snapshot) => {
-      setSuppliers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return () => unsub();
-  }, []);
+  if (!user) return;
+  const q = query(collection(db, 'suppliers'), where('userId', '==', user.uid));
+  const unsub = onSnapshot(q, (snapshot) => {
+    setSuppliers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  });
+  return () => unsub();
+}, [user]);
+
+  if (!user) {
+    return <AuthForm onAuth={setUser} />;
+  }
 
   const handleAddSupplier = async (supplier) => {
-    await addDoc(collection(db, 'suppliers'), supplier);
+    if (!user) return;
+    await addDoc(collection(db, 'suppliers'), { ...supplier, userId: user.uid });
   };
 
   const handleEditSupplier = async (id, updatedSupplier) => {
@@ -604,6 +776,7 @@ function App() {
             Add Supplier
           </button>
         </Link>
+        <button onClick={() => signOut(getAuth())} style={primaryButtonStyle}>Logout</button>
         <Link to="/list" style={{ textDecoration: 'none' }}>
           <button
             style={{
