@@ -350,7 +350,26 @@ function AuthForm({ onAuth }) {
         >
           {isLogin ? "Need an account? Sign Up" : "Have an account? Login"}
         </button>
-      </form>
+        <div
+    style={{
+      marginTop: 32,
+      width: "100%",
+      borderTop: "1px solid #e0e0e0",
+      paddingTop: 18,
+      textAlign: "center",
+      color: "#1976d2",
+      fontWeight: 700,
+      fontSize: 16,
+      letterSpacing: 1,
+      fontFamily: "Segoe UI, Arial, sans-serif"
+    }}
+  >
+    <span style={{ display: "block", color: "#888", fontWeight: 500, fontSize: 14, marginBottom: 2 }}>
+      Application developed by
+    </span>
+    Ivan Mercado, <span style={{ color: "#1976d2", fontWeight: 700 }}>BSCpE</span>
+  </div>
+</form>
     </div>
   );
 }
