@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { db } from './firebase';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import MenuPage from './MenuPage';
 import {
   collection,
   addDoc,
@@ -90,6 +91,27 @@ function AddSupplier({ onAdd }) {
   };
 
   return (
+    <>
+  <button
+    type="button"
+    onClick={() => navigate('/')}
+    style={{
+      ...primaryButtonStyle,
+      marginBottom: 24,
+      background: '#1976d2',
+      color: '#fff',
+      fontWeight: 700,
+      fontSize: 16,
+      borderRadius: 8,
+      padding: '10px 24px',
+      boxShadow: '0 2px 8px #e3e3e3',
+      cursor: 'pointer'
+    }}
+  >
+    ← Back to Main Menu
+  </button>
+  {/* Your form goes here */}
+
     <form
       onSubmit={handleSubmit}
       style={{
@@ -198,7 +220,7 @@ function AddSupplier({ onAdd }) {
       <button type="submit" style={primaryButtonStyle}>
         Add Supplier
       </button>
-    </form>
+    </form></>
   );
 }
 
@@ -459,6 +481,8 @@ function SupplierList({ suppliers, onEdit, onDelete, editIndex, editForm, setEdi
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const navigate = useNavigate();
+
   function handleEditSave(id) {
     if (!editForm.name || !editForm.address || !editForm.contact || !editForm.messagingApp || !editForm.items) {
       alert('Please fill in all fields.');
@@ -494,6 +518,23 @@ function SupplierList({ suppliers, onEdit, onDelete, editIndex, editForm, setEdi
       maxWidth: 1600,
       margin: '0 auto',
     }}>
+      <button
+      onClick={() => navigate('/')}
+      style={{
+        ...primaryButtonStyle,
+        marginBottom: 24,
+        background: '#1976d2',
+        color: '#fff',
+        fontWeight: 700,
+        fontSize: 16,
+        borderRadius: 8,
+        padding: '10px 24px',
+        boxShadow: '0 2px 8px #e3e3e3',
+        cursor: 'pointer'
+      }}
+    >
+      ← Back to Main Menu
+    </button>
       <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: 20 }}>
         <thead>
           <tr style={{ background: '#f5f7fa' }}>
@@ -851,43 +892,8 @@ function App() {
       boxShadow: '0 8px 32px #cfd8dc',
       minHeight: '90vh'
     }}>
-      <h1 style={{
-        textAlign: 'center',
-        marginBottom: 32,
-        color: '#1976d2',
-        letterSpacing: 2,
-        fontWeight: 800,
-        fontSize: 36,
-        fontFamily: 'Segoe UI, Arial, sans-serif'
-      }}>
-        Smart Rye Automatics Supplier List
-      </h1>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32, gap: 16 }}>
-        <Link to="/add" style={{ textDecoration: 'none' }}>
-          <button
-            style={{
-              ...primaryButtonStyle,
-              background: location.pathname === '/add' ? '#1976d2' : '#b0bec5',
-              boxShadow: location.pathname === '/add' ? '0 2px 8px #e3e3e3' : 'none'
-            }}
-          >
-            Add Supplier
-          </button>
-        </Link>
-        <button onClick={() => signOut(getAuth())} style={primaryButtonStyle}>Logout</button>
-        <Link to="/list" style={{ textDecoration: 'none' }}>
-          <button
-            style={{
-              ...primaryButtonStyle,
-              background: location.pathname === '/list' ? '#1976d2' : '#b0bec5',
-              boxShadow: location.pathname === '/list' ? '0 2px 8px #e3e3e3' : 'none'
-            }}
-          >
-            Supplier List
-          </button>
-        </Link>
-      </div>
       <Routes>
+        <Route path="/" element={<MenuPage />} />
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
         <Route
           path="/list"
