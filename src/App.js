@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { db } from './firebase';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import MenuPage from './MenuPage';
 import {
   collection,
@@ -842,7 +842,7 @@ function App() {
     items: '',
   });
   const [expandedRows, setExpandedRows] = useState([]);
-  const location = useLocation();
+  
 
   const [user, setUser] = useState(null);
 
