@@ -225,11 +225,8 @@ export default function MenuPage({ user }) {
       </style>
             {/* Top App Bar */}
       <div className="menu-appbar">
-        <div className="menu-appbar-title">Smart Rye Automatics</div>
-        <button className="menu-logout-btn" onClick={handleLogout} title="Logout">
-          <span role="img" aria-label="logout">🚪</span>
-        </button>
-      </div>
+  <div className="menu-appbar-title">Smart Rye Automatics</div>
+</div>
 
       {/* Sidebar for desktop */}
       <div className="menu-sidebar">
