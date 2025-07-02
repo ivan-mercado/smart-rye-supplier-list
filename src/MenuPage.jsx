@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 
+
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,9 +15,11 @@ export default function MenuPage({ user }) {
           { label: "Suppliers", to: "/list", icon: "📦" },
           { label: "Exam", to: "/exams", icon: "📝" },
           { label: "Results", to: "/results", icon: "📊" },
+          { label: "Resumes", to: "/resumes", icon: "📄" }, // Admin: view all resumes
         ]
       : [
           { label: "Exam", to: "/exams", icon: "📝" },
+          { label: "Upload Resume", to: "/upload-resume", icon: "📤" }, // User: upload resume
         ];
 
   // For bottom nav, only show up to 3 main actions

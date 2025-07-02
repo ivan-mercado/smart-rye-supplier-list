@@ -4,6 +4,8 @@ import { db } from './firebase';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import MenuPage from './MenuPage';
 import TakeExamPage from './TakeExamPage';
+import UploadResumePage from './UploadResumePage';
+import ResumesPage from './ResumesPage';
 import ResultsPage from './ResultsPage';
 import ExamsPage from './ExamsPage';
 import {
@@ -1032,6 +1034,8 @@ if (user?.role === "user") {
             />
           }
         />
+           <Route path="/upload-resume" element={<UploadResumePage />} />
+            <Route path="/resumes" element={<ResumesPage />} />
         <Route path="/exams" element={<ExamsPage user={user} />} />
         <Route path="*" element={<AddSupplier onAdd={handleAddSupplier} />} />
       </Routes>
