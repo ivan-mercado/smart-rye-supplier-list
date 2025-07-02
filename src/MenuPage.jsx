@@ -10,16 +10,16 @@ export default function MenuPage({ user }) {
   const menuItems =
     user?.role === "admin"
       ? [
-          { label: "Add Supplier", to: "/add", icon: "➕" },
-          { label: "Supplier List", to: "/list", icon: "📦" },
-          { label: "Online Exam", to: "/exams", icon: "📝" },
+          { label: "Add", to: "/add", icon: "➕" },
+          { label: "Suppliers", to: "/list", icon: "📦" },
+          { label: "Exam", to: "/exams", icon: "📝" },
           { label: "Results", to: "/results", icon: "📊" },
         ]
       : [
-          { label: "Online Exam", to: "/exams", icon: "📝" },
+          { label: "Exam", to: "/exams", icon: "📝" },
         ];
 
-  // For bottom nav, only show 3 main actions (customize as needed)
+  // For bottom nav, only show up to 3 main actions
   const bottomNavItems = menuItems.slice(0, 3);
 
   const handleLogout = async () => {
@@ -46,39 +46,41 @@ export default function MenuPage({ user }) {
           top: 0;
           left: 0;
           z-index: 10;
-          background: rgba(255,255,255,0.95);
+          background: rgba(255,255,255,0.97);
           box-shadow: 0 2px 12px #b0bec533;
           display: flex;
           align-items: center;
           justify-content: center;
-          height: 64px;
+          height: 52px;
         }
         .menu-appbar-title {
-          font-size: 1.7rem;
-          font-weight: 900;
+          font-size: 1.25rem;
+          font-weight: 800;
           color: #1976d2;
-          letter-spacing: 1.5px;
+          letter-spacing: 1.2px;
           text-shadow: 0 2px 8px #b0bec5;
+          flex: 1;
+          text-align: center;
         }
         .menu-logout-btn {
           position: absolute;
-          right: 24px;
+          right: 18px;
           top: 50%;
           transform: translateY(-50%);
-          background: linear-gradient(90deg, #e53935 60%, #ff7043 100%);
-          color: #fff;
+          background: none;
+          color: #1976d2;
           border: none;
-          border-radius: 8px;
-          padding: 8px 18px;
-          font-weight: 700;
-          font-size: 1rem;
+          border-radius: 50%;
+          padding: 6px;
+          font-size: 1.3rem;
           cursor: pointer;
-          box-shadow: 0 2px 8px #e3e3e3;
-          transition: background 0.2s, transform 0.15s;
+          transition: background 0.18s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .menu-logout-btn:active {
-          background: #b71c1c;
-          transform: scale(0.97);
+        .menu-logout-btn:active, .menu-logout-btn:focus {
+          background: #e3f0ff;
         }
         .menu-center-content {
           flex: 1;
@@ -88,44 +90,44 @@ export default function MenuPage({ user }) {
           justify-content: center;
           min-height: 100vh;
           width: 100vw;
-          padding-top: 80px;
-          padding-bottom: 90px;
+          padding-top: 70px;
+          padding-bottom: 80px;
         }
         .menu-welcome-card {
           background: #fff;
-          border-radius: 24px;
-          box-shadow: 0 8px 32px #cfd8dc;
-          padding: 40px 28px 32px 28px;
-          max-width: 420px;
-          width: 95vw;
+          border-radius: 18px;
+          box-shadow: 0 4px 24px #cfd8dc;
+          padding: 28px 12px 20px 12px;
+          max-width: 370px;
+          width: 94vw;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           align-items: center;
         }
         .menu-welcome-title {
-          font-size: 2rem;
+          font-size: 1.25rem;
           font-weight: 900;
           color: #1976d2;
-          margin-bottom: 12px;
+          margin-bottom: 8px;
           text-align: center;
-          letter-spacing: 1.2px;
+          letter-spacing: 1.1px;
         }
         .menu-welcome-desc {
-          font-size: 1.1rem;
+          font-size: 1rem;
           color: #22223b;
-          margin-bottom: 28px;
+          margin-bottom: 18px;
           text-align: center;
           font-weight: 500;
         }
         .menu-welcome-svg {
-          margin-bottom: 24px;
+          margin-bottom: 16px;
         }
         .menu-welcome-footer {
           color: #888;
-          font-size: 1rem;
+          font-size: 0.98rem;
           text-align: center;
-          margin-top: 8px;
+          margin-top: 4px;
         }
         .menu-bottom-nav {
           position: fixed;
@@ -138,7 +140,7 @@ export default function MenuPage({ user }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          height: 64px;
+          height: 56px;
           z-index: 20;
         }
         .menu-bottom-nav-link {
@@ -149,19 +151,24 @@ export default function MenuPage({ user }) {
           justify-content: center;
           color: #1976d2;
           text-decoration: none;
-          font-size: 1.1rem;
+          font-size: 0.98rem;
           font-weight: 700;
-          padding: 6px 0 0 0;
+          padding: 0;
           border: none;
           background: none;
           transition: color 0.18s;
+          height: 100%;
         }
         .menu-bottom-nav-link.active {
           color: #43a047;
         }
         .menu-bottom-nav-link span {
-          font-size: 1.5rem;
-          margin-bottom: 2px;
+          font-size: 1.3rem;
+          margin-bottom: 1px;
+        }
+        .menu-bottom-nav-logout {
+          color: #b71c1c;
+          font-weight: 700;
         }
         /* Desktop sidebar for large screens */
         @media (min-width: 900px) {
@@ -170,37 +177,37 @@ export default function MenuPage({ user }) {
           }
           .menu-sidebar {
             position: fixed;
-            top: 64px;
+            top: 52px;
             left: 0;
-            width: 220px;
-            height: calc(100vh - 64px);
+            width: 180px;
+            height: calc(100vh - 52px);
             background: rgba(255,255,255,0.18);
             box-shadow: 4px 0 32px #b0bec5;
-            border-top-right-radius: 36px;
-            border-bottom-right-radius: 36px;
+            border-top-right-radius: 28px;
+            border-bottom-right-radius: 28px;
             backdrop-filter: blur(18px);
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 32px 0 24px 0;
+            padding: 24px 0 18px 0;
           }
           .menu-sidebar-link {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 24px;
+            gap: 10px;
+            padding: 10px 18px;
             color: #1976d2;
             text-decoration: none;
             font-weight: 700;
-            font-size: 1.1rem;
-            border-radius: 12px;
-            margin: 8px 0;
+            font-size: 1rem;
+            border-radius: 10px;
+            margin: 6px 0;
             background: rgba(255,255,255,0.85);
             box-shadow: 0 2px 12px #b0bec533;
             transition: background 0.2s, color 0.2s, transform 0.15s;
             cursor: pointer;
-            width: 180px;
+            width: 140px;
             justify-content: flex-start;
           }
           .menu-sidebar-link.active, .menu-sidebar-link:hover {
@@ -209,7 +216,6 @@ export default function MenuPage({ user }) {
             transform: translateY(-2px) scale(1.04);
           }
         }
-        /* Hide sidebar on mobile */
         @media (max-width: 899px) {
           .menu-sidebar {
             display: none;
@@ -220,8 +226,8 @@ export default function MenuPage({ user }) {
             {/* Top App Bar */}
       <div className="menu-appbar">
         <div className="menu-appbar-title">Smart Rye Automatics</div>
-        <button className="menu-logout-btn" onClick={handleLogout}>
-          Logout
+        <button className="menu-logout-btn" onClick={handleLogout} title="Logout">
+          <span role="img" aria-label="logout">🚪</span>
         </button>
       </div>
 
@@ -236,7 +242,7 @@ export default function MenuPage({ user }) {
               (location.pathname === item.to ? " active" : "")
             }
           >
-            <span style={{ fontSize: 22 }}>{item.icon}</span>
+            <span style={{ fontSize: 20 }}>{item.icon}</span>
             {item.label}
           </Link>
         ))}
@@ -252,7 +258,7 @@ export default function MenuPage({ user }) {
             Manage your suppliers, track your business, and grow with confidence.
           </div>
           <div className="menu-welcome-svg">
-            <svg width="80" height="80" viewBox="0 0 120 120" fill="none">
+            <svg width="60" height="60" viewBox="0 0 120 120" fill="none">
               <circle cx="60" cy="60" r="56" fill="#e3f0ff" stroke="#1976d2" strokeWidth="4"/>
               <rect x="35" y="70" width="50" height="18" rx="9" fill="#43a047"/>
               <rect x="50" y="35" width="20" height="40" rx="10" fill="#1976d2"/>
@@ -277,16 +283,16 @@ export default function MenuPage({ user }) {
             }
           >
             <span>{item.icon}</span>
-            {item.label}
+            <div style={{ fontSize: "0.8rem", marginTop: 1 }}>{item.label}</div>
           </Link>
         ))}
         <button
-          className="menu-bottom-nav-link"
-          style={{ color: "#e53935", fontWeight: 800, border: "none", background: "none" }}
+          className="menu-bottom-nav-link menu-bottom-nav-logout"
           onClick={handleLogout}
+          title="Logout"
         >
           <span>🚪</span>
-          Logout
+          <div style={{ fontSize: "0.8rem", marginTop: 1 }}>Logout</div>
         </button>
       </nav>
     </div>
