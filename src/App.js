@@ -238,41 +238,71 @@ function AuthForm({ onAuth }) {
   const auth = getAuth();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
-  try {
-    let userCredential;
-    if (isLogin) {
-      userCredential = await signInWithEmailAndPassword(auth, email, password);
-    } else {
-      userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Create user profile in Firestore with role
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        email: userCredential.user.email,
-        role: "user", // or "admin" for the first user
-      });
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      let userCredential;
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          email: userCredential.user.email,
+          role: "user",
+        });
+      }
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      const userData = userDoc.data();
+      onAuth({ ...userCredential.user, role: userData.role });
+    } catch (err) {
+      setError(err.message.replace("Firebase: ", ""));
     }
-    // Fetch user role after login/signup
-    const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-    const userData = userDoc.data();
-    onAuth({ ...userCredential.user, role: userData.role });
-  } catch (err) {
-    setError(err.message.replace("Firebase: ", ""));
-  }
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      width: "100vw",
-      position: "relative",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {/* Responsive styles */}
+      <style>
+        {`
+        @media (max-width: 600px) {
+          .auth-form-container {
+            min-width: 0 !important;
+            max-width: 98vw !important;
+            width: 98vw !important;
+            padding: 22px 6vw 18px 6vw !important;
+            border-radius: 12px !important;
+          }
+          .auth-form-title {
+            font-size: 20px !important;
+          }
+          .auth-form-h2 {
+            font-size: 20px !important;
+          }
+          .auth-form-input {
+            font-size: 15px !important;
+            padding: 12px 10px 12px 38px !important;
+            border-radius: 8px !important;
+          }
+          .auth-form-btn {
+            font-size: 15px !important;
+            padding: 10px 0 !important;
+            border-radius: 8px !important;
+          }
+        }
+        `}
+      </style>
       {/* Video Background */}
       <video
         autoPlay
@@ -293,21 +323,24 @@ function AuthForm({ onAuth }) {
         Your browser does not support the video tag.
       </video>
 
-      {/* Overlay (optional, for better contrast) */}
-      <div style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(240, 248, 255, 0.55)", // light overlay
-        zIndex: 1,
-        pointerEvents: "none"
-      }} />
+      {/* Overlay */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(240, 248, 255, 0.55)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
+        className="auth-form-container"
         style={{
           position: "relative",
           zIndex: 2,
@@ -323,51 +356,59 @@ function AuthForm({ onAuth }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          fontFamily: "Inter, Nunito, Segoe UI, Arial, sans-serif"
+          fontFamily: "Inter, Nunito, Segoe UI, Arial, sans-serif",
         }}
       >
-        {/* Title above Welcome Back */}
-  <div style={{
-    fontSize: 25,
-    fontWeight: 600,
-    color: "#4f8cff",
-    marginBottom: 8,
-    letterSpacing: 1,
-    textAlign: "center"
-  }}>
-    Smart Rye Automatics
-  </div>
-        <h2 style={{
-          color: "#22223b",
-          fontWeight: 800,
-          marginBottom: 22,
-          fontSize: 27,
-          letterSpacing: 1.2,
-        }}>
+        <div
+          className="auth-form-title"
+          style={{
+            fontSize: 25,
+            fontWeight: 600,
+            color: "#4f8cff",
+            marginBottom: 8,
+            letterSpacing: 1,
+            textAlign: "center",
+          }}
+        >
+          Smart Rye Automatics
+        </div>
+        <h2
+          className="auth-form-h2"
+          style={{
+            color: "#22223b",
+            fontWeight: 800,
+            marginBottom: 22,
+            fontSize: 27,
+            letterSpacing: 1.2,
+          }}
+        >
           {isLogin ? "Welcome Back" : "Create Account"}
         </h2>
         {error && (
-          <div style={{
-            background: "#ffeaea",
-            color: "#d32f2f",
-            padding: "10px 16px",
-            borderRadius: 8,
-            marginBottom: 16,
-            width: "100%",
-            textAlign: "center",
-            fontSize: 15,
-            fontWeight: 500,
-            border: "1px solid #ffd6d6"
-          }}>
+          <div
+            style={{
+              background: "#ffeaea",
+              color: "#d32f2f",
+              padding: "10px 16px",
+              borderRadius: 8,
+              marginBottom: 16,
+              width: "100%",
+              textAlign: "center",
+              fontSize: 15,
+              fontWeight: 500,
+              border: "1px solid #ffd6d6",
+            }}
+          >
             {error}
           </div>
         )}
         <div style={{ width: "100%", position: "relative", marginBottom: 18 }}>
           <input
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             type="email"
+            className="auth-form-input"
             style={{
               width: "100%",
               boxSizing: "border-box",
@@ -378,28 +419,39 @@ function AuthForm({ onAuth }) {
               background: "#f7faff",
               outline: "none",
               transition: "border 0.2s",
-              boxShadow: "0 1px 2px #f0f4fa"
+              boxShadow: "0 1px 2px #f0f4fa",
             }}
             autoFocus
             required
           />
-          {/* Email icon (SVG) */}
-          <span style={{
-            position: "absolute",
-            left: 12,
-            top: "50%",
-            transform: "translateY(-50%)",
-            opacity: 0.5
-          }}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm0 0l8 8 8-8" stroke="#22223b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          {/* Email icon */}
+          <span
+            style={{
+              position: "absolute",
+              left: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              opacity: 0.5,
+            }}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+              <path
+                d="M4 4h16v16H4V4zm0 0l8 8 8-8"
+                stroke="#22223b"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </span>
         </div>
         <div style={{ width: "100%", position: "relative", marginBottom: 18 }}>
           <input
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             type="password"
+            className="auth-form-input"
             style={{
               width: "100%",
               boxSizing: "border-box",
@@ -410,28 +462,48 @@ function AuthForm({ onAuth }) {
               background: "#f7faff",
               outline: "none",
               transition: "border 0.2s",
-              boxShadow: "0 1px 2px #f0f4fa"
+              boxShadow: "0 1px 2px #f0f4fa",
             }}
             required
           />
-          {/* Lock icon (SVG) */}
-          <span style={{
-            position: "absolute",
-            left: 12,
-            top: "50%",
-            transform: "translateY(-50%)",
-            opacity: 0.5
-          }}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="8" rx="2" stroke="#22223b" strokeWidth="1.5"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="#22223b" strokeWidth="1.5"/></svg>
+          {/* Lock icon */}
+          <span
+            style={{
+              position: "absolute",
+              left: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              opacity: 0.5,
+            }}
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+              <rect
+                x="5"
+                y="11"
+                width="14"
+                height="8"
+                rx="2"
+                stroke="#22223b"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M8 11V8a4 4 0 1 1 8 0v3"
+                stroke="#22223b"
+                strokeWidth="1.5"
+              />
+            </svg>
           </span>
         </div>
         <button
           type="submit"
           disabled={loading}
+          className="auth-form-btn"
           style={{
             width: "100%",
             padding: "12px 0",
-            background: loading ? "#bfc9d1" : "linear-gradient(90deg, #4f8cff 0%, #6ed0fa 100%)",
+            background: loading
+              ? "#bfc9d1"
+              : "linear-gradient(90deg, #4f8cff 0%, #6ed0fa 100%)",
             color: "#fff",
             border: "none",
             borderRadius: 12,
@@ -441,14 +513,23 @@ function AuthForm({ onAuth }) {
             cursor: loading ? "not-allowed" : "pointer",
             boxShadow: "0 2px 8px #e3e3e3",
             transition: "background 0.2s, box-shadow 0.2s",
-            letterSpacing: 0.5
+            letterSpacing: 0.5,
           }}
         >
-          {loading ? (isLogin ? "Logging in..." : "Signing up...") : (isLogin ? "Login" : "Sign Up")}
+          {loading
+            ? isLogin
+              ? "Logging in..."
+              : "Signing up..."
+            : isLogin
+            ? "Login"
+            : "Sign Up"}
         </button>
         <button
           type="button"
-          onClick={() => { setIsLogin(!isLogin); setError(""); }}
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError("");
+          }}
           style={{
             background: "none",
             border: "none",
@@ -458,7 +539,7 @@ function AuthForm({ onAuth }) {
             cursor: "pointer",
             marginTop: 2,
             marginBottom: 0,
-            textDecoration: "underline"
+            textDecoration: "underline",
           }}
         >
           {isLogin ? "Need an account? Sign Up" : "Have an account? Login"}
@@ -474,13 +555,22 @@ function AuthForm({ onAuth }) {
             fontWeight: 700,
             fontSize: 15,
             letterSpacing: 1,
-            fontFamily: "inherit"
+            fontFamily: "inherit",
           }}
         >
-          <span style={{ display: "block", color: "#888", fontWeight: 500, fontSize: 13, marginBottom: 2 }}>
+          <span
+            style={{
+              display: "block",
+              color: "#888",
+              fontWeight: 500,
+              fontSize: 13,
+              marginBottom: 2,
+            }}
+          >
             Application developed by
           </span>
-          Ivan Mercado, <span style={{ color: "#4f8cff", fontWeight: 700 }}>BSCpE</span>
+          Ivan Mercado,{" "}
+          <span style={{ color: "#4f8cff", fontWeight: 700 }}>BSCpE</span>
         </div>
       </form>
     </div>
