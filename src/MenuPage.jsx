@@ -2,17 +2,26 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from "firebase/auth";
 
-const menuItems = [
-  { label: 'Add Supplier', to: '/add', icon: '➕', active: true },
-  { label: 'Supplier List', to: '/list', icon: '📦', active: true },
-  { label: 'Coming Soon', to: '', icon: '🚧', active: false },
-  { label: 'Coming Soon', to: '', icon: '🚧', active: false },
-  { label: 'Coming Soon', to: '', icon: '🚧', active: false },
-];
 
-export default function MenuPage() {
+
+export default function MenuPage({ user }) {
   const navigate = useNavigate();
-
+  const menuItems = [
+  ...(user?.role === "admin"
+    ? [
+        { label: 'Add Supplier', to: '/add', icon: '➕', active: true },
+        { label: 'Supplier List', to: '/list', icon: '📦', active: true },
+        { label: 'Online Examination', to: '/exams', icon: '📝', active: true },
+        { label: 'Examination Results', to: '/results', icon: '📊', active: true },
+      ]
+    : user?.role === "user"
+    ? [
+        { label: 'Online Examination', to: '/exams', icon: '📝', active: true },
+        
+      ]
+    : []),
+  // Optionally, add coming soon or other items here
+];
   const handleLogout = async () => {
     await signOut(getAuth());
     navigate('/');

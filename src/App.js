@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import MenuPage from './MenuPage';
+import TakeExamPage from './TakeExamPage';
+import ResultsPage from './ResultsPage';
+import ExamsPage from './ExamsPage';
 import {
   collection,
   addDoc,
@@ -10,8 +13,10 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,      // <-- add this
-  where       // <-- add this
+  setDoc,
+  getDoc,
+  query,
+  where
 } from 'firebase/firestore';
 
 const MESSAGING_APPS = [
@@ -233,22 +238,30 @@ function AuthForm({ onAuth }) {
   const auth = getAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      let userCredential;
-      if (isLogin) {
-        userCredential = await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      }
-      onAuth(userCredential.user);
-    } catch (err) {
-      setError(err.message.replace("Firebase: ", ""));
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  try {
+    let userCredential;
+    if (isLogin) {
+      userCredential = await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Create user profile in Firestore with role
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: userCredential.user.email,
+        role: "user", // or "admin" for the first user
+      });
     }
-    setLoading(false);
-  };
+    // Fetch user role after login/signup
+    const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+    const userData = userDoc.data();
+    onAuth({ ...userCredential.user, role: userData.role });
+  } catch (err) {
+    setError(err.message.replace("Firebase: ", ""));
+  }
+  setLoading(false);
+};
 
   return (
     <div style={{
@@ -852,14 +865,30 @@ function App() {
     return unsubscribe;
   }, []);
   
+  if (user?.role === "admin") {
+  // Show admin features
+}
+if (user?.role === "user") {
+  // Show user features
+}
 
   // Real-time Firestore listener
   useEffect(() => {
   if (!user) return;
-  const q = query(collection(db, 'suppliers'), where('userId', '==', user.uid));
+
+  let q;
+  if (user.role === "admin") {
+    // Admin: get all suppliers
+    q = query(collection(db, 'suppliers'));
+  } else {
+    // User: get only their suppliers
+    q = query(collection(db, 'suppliers'), where('userId', '==', user.uid));
+  }
+
   const unsub = onSnapshot(q, (snapshot) => {
     setSuppliers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
   });
+
   return () => unsub();
 }, [user]);
 
@@ -893,8 +922,10 @@ function App() {
       minHeight: '90vh'
     }}>
       <Routes>
-        <Route path="/" element={<MenuPage />} />
+        <Route path="/" element={<MenuPage user={user} />} />
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
+          <Route path="/results" element={<ResultsPage user={user} />} />
+          <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />
         <Route
           path="/list"
           element={
@@ -911,6 +942,7 @@ function App() {
             />
           }
         />
+        <Route path="/exams" element={<ExamsPage user={user} />} />
         <Route path="*" element={<AddSupplier onAdd={handleAddSupplier} />} />
       </Routes>
     </div>
