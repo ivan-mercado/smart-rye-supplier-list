@@ -230,20 +230,44 @@ export default function MenuPage({ user }) {
 
       {/* Sidebar for desktop */}
       <div className="menu-sidebar">
-        {menuItems.map((item, idx) => (
-          <Link
-            key={item.label + idx}
-            to={item.to}
-            className={
-              "menu-sidebar-link" +
-              (location.pathname === item.to ? " active" : "")
-            }
-          >
-            <span style={{ fontSize: 20 }}>{item.icon}</span>
-            {item.label}
-          </Link>
-        ))}
-      </div>
+  {menuItems.map((item, idx) => (
+    <Link
+      key={item.label + idx}
+      to={item.to}
+      className={
+        "menu-sidebar-link" +
+        (location.pathname === item.to ? " active" : "")
+      }
+    >
+      <span style={{ fontSize: 20 }}>{item.icon}</span>
+      {item.label}
+    </Link>
+  ))}
+  {/* Spacer for separation */}
+  <div style={{ flexGrow: 1 }} />
+  {/* Logout Button */}
+  <button
+    className="menu-sidebar-link"
+    style={{
+      color: "#b71c1c",
+      fontWeight: 700,
+      background: "rgba(255,255,255,0.85)",
+      border: "none",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      width: "140px",
+      justifyContent: "flex-start",
+      marginBottom: "56px", // <-- Add bottom margin
+      marginTop: "12px",    // <-- Add top margin for separation
+    }}
+    onClick={handleLogout}
+  >
+    <span style={{ fontSize: 20 }}>🚪</span>
+    Logout
+  </button>
+</div>
 
       {/* Main Centered Content */}
       <div className="menu-center-content">
