@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import { db, auth } from './firebase';
+import { db } from './firebase';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import MenuPage from './MenuPage';
 import TakeExamPage from './TakeExamPage';
