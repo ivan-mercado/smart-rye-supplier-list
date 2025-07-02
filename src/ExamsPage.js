@@ -8,11 +8,10 @@ export default function ExamsPage({ user }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([
-    { type: 'text', question: '', options: [''] }
+    { type: 'text', question: '', options: [''], correctAnswer: '' }
   ]);
   const [loading, setLoading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
-  const [assignedTo, setAssignedTo] = useState([]);
   const [selectedExams, setSelectedExams] = useState([]);
   const [sendExamId, setSendExamId] = useState(null);
   const [sendToUser, setSendToUser] = useState('');
@@ -54,18 +53,18 @@ export default function ExamsPage({ user }) {
     const sanitizedQuestions = questions.map(q => ({
       type: q.type || "text",
       question: q.question || "",
-      options: q.type === "mcq" ? (q.options || []).filter(opt => opt && opt.trim() !== "") : []
+      options: q.type === "mcq" ? (q.options || []).filter(opt => opt && opt.trim() !== "") : [],
+      correctAnswer: q.correctAnswer || ""
     }));
     await addDoc(collection(db, 'exams'), {
       title: title || "",
       description: description || "",
       questions: sanitizedQuestions,
-      assignedTo: assignedTo || []
+      assignedTo: [] // Exams are created unassigned
     });
     setTitle('');
     setDescription('');
-    setQuestions([{ type: 'text', question: '', options: [''] }]);
-    setAssignedTo([]);
+    setQuestions([{ type: 'text', question: '', options: [''], correctAnswer: '' }]);
   };
 
   // Delete selected exams
@@ -74,7 +73,6 @@ export default function ExamsPage({ user }) {
       await deleteDoc(doc(db, 'exams', examId));
     }
     setSelectedExams([]);
-    // Exams will refetch due to useEffect dependency
   };
 
   // --- Admin UI ---
@@ -138,200 +136,175 @@ export default function ExamsPage({ user }) {
               }}
             />
           </div>
-          <h4 style={{ color: '#1976d2', fontWeight: 700, marginBottom: 10 }}>Assign to Users</h4>
-          <select
-            multiple
-            value={assignedTo}
-            onChange={e => {
-              const options = Array.from(e.target.selectedOptions, option => option.value);
-              setAssignedTo(options);
-            }}
-            style={{
-              width: '100%',
-              padding: 10,
-              borderRadius: 8,
-              border: '1.5px solid #b0bec5',
-              fontSize: 16,
-              background: '#f5f7fa',
-              marginBottom: 18
-            }}
-          >
-            {allUsers
-  .filter(u => u.role === "user")
-  .map(u => (
-    <option key={u.uid} value={u.uid}>
-      {u.email}
-    </option>
-))}
-          </select>
           <h4 style={{ color: '#1976d2', fontWeight: 700, marginBottom: 10 }}>Questions</h4>
           {questions.map((q, idx) => (
-  <div key={idx} style={{ marginBottom: 18, border: '1px solid #e3e8f7', borderRadius: 8, padding: 12 }}>
-    <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-      <select
-        value={q.type}
-        onChange={e => {
-          const newQuestions = [...questions];
-          newQuestions[idx].type = e.target.value;
-          if (e.target.value === 'mcq') newQuestions[idx].options = [''];
-          setQuestions(newQuestions);
-        }}
-        style={{
-          borderRadius: 6,
-          border: '1.5px solid #b0bec5',
-          fontSize: 15,
-          padding: '6px 10px'
-        }}
-      >
-        <option value="text">Text</option>
-        <option value="mcq">MCQ</option>
-        <option value="likert">Likert (1-5)</option>
-      </select>
-      <input
-        value={q.question}
-        onChange={e => {
-          const newQuestions = [...questions];
-          newQuestions[idx].question = e.target.value;
-          setQuestions(newQuestions);
-        }}
-        placeholder="Question"
-        required
-        style={{
-          flex: 1,
-          padding: 10,
-          borderRadius: 6,
-          border: '1.5px solid #b0bec5',
-          fontSize: 16,
-          background: '#f5f7fa'
-        }}
-      />
-      <button
-        type="button"
-        onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
-        style={{
-          background: '#e53935',
-          color: '#fff',
-          border: 'none',
-          borderRadius: 6,
-          padding: '6px 14px',
-          fontWeight: 600,
-          cursor: 'pointer'
-        }}
-      >
-        Remove
-      </button>
-    </div>
-    {/* MCQ Options */}
-    {q.type === 'mcq' && (
-      <div style={{ marginLeft: 0 }}>
-        {q.options.map((opt, oidx) => (
-          <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <input
-              value={opt}
-              onChange={e => {
-                const newQuestions = [...questions];
-                newQuestions[idx].options[oidx] = e.target.value;
-                setQuestions(newQuestions);
-              }}
-              placeholder={`Option ${oidx + 1}`}
-              style={{
-                flex: 1,
-                padding: 8,
-                borderRadius: 6,
-                border: '1.5px solid #b0bec5',
-                fontSize: 15,
-                background: '#f5f7fa'
-              }}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const newQuestions = [...questions];
-                newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
-                setQuestions(newQuestions);
-              }}
-              style={{
-                background: '#e53935',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '2px 10px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => {
-            const newQuestions = [...questions];
-            newQuestions[idx].options.push('');
-            setQuestions(newQuestions);
-          }}
-          style={{
-            background: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            padding: '6px 14px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            marginTop: 4
-          }}
-        >
-          + Add Option
-        </button>
-        {/* MCQ Correct Answer */}
-        <div style={{ marginTop: 8 }}>
-          <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-          <select
-            value={q.correctAnswer || ''}
-            onChange={e => {
-              const newQuestions = [...questions];
-              newQuestions[idx].correctAnswer = e.target.value;
-              setQuestions(newQuestions);
-            }}
-            style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
-          >
-            <option value="">Select correct option</option>
-            {q.options.map((opt, oidx) => (
-              <option key={oidx} value={opt}>{opt}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-    )}
-    {/* Text Correct Answer */}
-    {q.type === 'text' && (
-      <div style={{ marginTop: 8 }}>
-        <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-        <input
-          value={q.correctAnswer || ''}
-          onChange={e => {
-            const newQuestions = [...questions];
-            newQuestions[idx].correctAnswer = e.target.value;
-            setQuestions(newQuestions);
-          }}
-          style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
-          placeholder="Correct answer"
-        />
-      </div>
-    )}
-    {/* Likert: (optional, usually not scored) */}
-    {q.type === 'likert' && (
-      <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
-        Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
-      </div>
-    )}
-  </div>
-))}
+            <div key={idx} style={{ marginBottom: 18, border: '1px solid #e3e8f7', borderRadius: 8, padding: 12 }}>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+                <select
+                  value={q.type}
+                  onChange={e => {
+                    const newQuestions = [...questions];
+                    newQuestions[idx].type = e.target.value;
+                    if (e.target.value === 'mcq') newQuestions[idx].options = [''];
+                    if (e.target.value !== 'mcq') newQuestions[idx].options = [''];
+                    setQuestions(newQuestions);
+                  }}
+                  style={{
+                    borderRadius: 6,
+                    border: '1.5px solid #b0bec5',
+                    fontSize: 15,
+                    padding: '6px 10px'
+                  }}
+                >
+                  <option value="text">Text</option>
+                  <option value="mcq">MCQ</option>
+                  <option value="likert">Likert (1-5)</option>
+                </select>
+                <input
+                  value={q.question}
+                  onChange={e => {
+                    const newQuestions = [...questions];
+                    newQuestions[idx].question = e.target.value;
+                    setQuestions(newQuestions);
+                  }}
+                  placeholder="Question"
+                  required
+                  style={{
+                    flex: 1,
+                    padding: 10,
+                    borderRadius: 6,
+                    border: '1.5px solid #b0bec5',
+                    fontSize: 16,
+                    background: '#f5f7fa'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
+                  style={{
+                    background: '#e53935',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '6px 14px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+              {/* MCQ Options */}
+              {q.type === 'mcq' && (
+                <div style={{ marginLeft: 0 }}>
+                  {q.options.map((opt, oidx) => (
+                    <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <input
+                        value={opt}
+                        onChange={e => {
+                          const newQuestions = [...questions];
+                          newQuestions[idx].options[oidx] = e.target.value;
+                          setQuestions(newQuestions);
+                        }}
+                        placeholder={`Option ${oidx + 1}`}
+                        style={{
+                          flex: 1,
+                          padding: 8,
+                          borderRadius: 6,
+                          border: '1.5px solid #b0bec5',
+                          fontSize: 15,
+                          background: '#f5f7fa'
+                        }}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newQuestions = [...questions];
+                          newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
+                          setQuestions(newQuestions);
+                        }}
+                        style={{
+                          background: '#e53935',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 6,
+                          padding: '2px 10px',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newQuestions = [...questions];
+                      newQuestions[idx].options.push('');
+                      setQuestions(newQuestions);
+                    }}
+                    style={{
+                      background: '#1976d2',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 6,
+                      padding: '6px 14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      marginTop: 4
+                    }}
+                  >
+                    + Add Option
+                  </button>
+                  {/* MCQ Correct Answer */}
+                  <div style={{ marginTop: 8 }}>
+                    <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
+                    <select
+                      value={q.correctAnswer || ''}
+                      onChange={e => {
+                        const newQuestions = [...questions];
+                        newQuestions[idx].correctAnswer = e.target.value;
+                        setQuestions(newQuestions);
+                      }}
+                      style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
+                    >
+                      <option value="">Select correct option</option>
+                      {q.options.map((opt, oidx) => (
+                        <option key={oidx} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+              {/* Text Correct Answer */}
+              {q.type === 'text' && (
+                <div style={{ marginTop: 8 }}>
+                  <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
+                  <input
+                    value={q.correctAnswer || ''}
+                    onChange={e => {
+                      const newQuestions = [...questions];
+                      newQuestions[idx].correctAnswer = e.target.value;
+                      setQuestions(newQuestions);
+                    }}
+                    style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
+                    placeholder="Correct answer"
+                  />
+                </div>
+              )}
+              {/* Likert: (optional, usually not scored) */}
+              {q.type === 'likert' && (
+                <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
+                  Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
+                </div>
+              )}
+            </div>
+          ))}
           <button
             type="button"
-            onClick={() => setQuestions([...questions, { type: 'text', question: '', options: [''] }])}
+            onClick={() => setQuestions([...questions, { type: 'text', question: '', options: [''], correctAnswer: '' }])}
             style={{
               background: '#1976d2',
               color: '#fff',
@@ -435,7 +408,7 @@ export default function ExamsPage({ user }) {
             ))}
           </ul>
         )}
-        {/* Send to User Modal */}
+                {/* Send to User Modal */}
         {showSendModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',

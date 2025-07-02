@@ -17,13 +17,14 @@ export default function ResultsPage({ user }) {
   const [examQuestions, setExamQuestions] = useState([]);
   const navigate = useNavigate();
 
-  // Scoring function
+  // Scoring function: Likert is always correct
   function calculateScore(questions, answers) {
     let score = 0;
     questions.forEach((q, idx) => {
-      if (!q.correctAnswer) return;
-      if (q.type === 'mcq' || q.type === 'likert') {
-        if (answers[idx] === q.correctAnswer) score++;
+      if (q.type === 'likert') {
+        score++; // Always count Likert as correct
+      } else if (q.type === 'mcq') {
+        if (q.correctAnswer && answers[idx] === q.correctAnswer) score++;
       } else if (q.type === 'text') {
         if (
           answers[idx] &&
@@ -36,6 +37,8 @@ export default function ResultsPage({ user }) {
     });
     return score;
   }
+
+  // ... (rest of your code up to the modal, unchanged)
 
   // Fetch results
   const refetchResults = async () => {
@@ -429,68 +432,73 @@ export default function ResultsPage({ user }) {
           {showAnswers ? 'Hide Answers' : 'Show Answers'}
         </button>
         {showAnswers && (
-          <div>
-            <hr style={{ border: 'none', borderTop: '1.5px solid #e3e8f7', margin: '18px 0' }} />
-            {examQuestions.length > 0 ? (
-              <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-                {examQuestions.map((q, idx) => (
-                  <li key={idx} style={{ marginBottom: 18 }}>
-                    <div style={{ fontWeight: 700, marginBottom: 4, color: '#1976d2' }}>
-                      Q{idx + 1}: <span style={{ color: '#222', fontWeight: 600 }}>{q.text}</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 2 }}>
-                      <span style={{
-                        background: '#e3e8f7',
-                        color: '#1976d2',
-                        borderRadius: 6,
-                        padding: '3px 12px',
-                        fontWeight: 600,
-                        fontSize: 15
-                      }}>
-                        Your answer: {viewResult.answers?.[idx] ?? <i>Not answered</i>}
-                      </span>
-                      <span style={{
-                        background: '#f5f5f5',
-                        color: '#43a047',
-                        borderRadius: 6,
-                        padding: '3px 12px',
-                        fontWeight: 600,
-                        fontSize: 15
-                      }}>
-                        Correct: {q.correctAnswer !== undefined && q.correctAnswer !== null && q.correctAnswer !== "" 
-  ? q.correctAnswer 
-  : <i>Not set</i>}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No questions found for this exam.</p>
-            )}
-            <div style={{
-              marginTop: 18,
-              fontWeight: 800,
-              fontSize: 18,
-              color: '#1976d2',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10
-            }}>
-              Score:
+  <div>
+    <hr style={{ border: 'none', borderTop: '1.5px solid #e3e8f7', margin: '18px 0' }} />
+    {examQuestions.length > 0 ? (
+      <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
+        {examQuestions.map((q, idx) => (
+          <li key={idx} style={{ marginBottom: 18 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4, color: '#1976d2' }}>
+              Q{idx + 1}: <span style={{ color: '#222', fontWeight: 600 }}>{q.question || q.text}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 2 }}>
               <span style={{
                 background: '#e3e8f7',
                 color: '#1976d2',
-                borderRadius: 8,
-                padding: '6px 18px',
-                fontWeight: 800,
-                fontSize: 18
+                borderRadius: 6,
+                padding: '3px 12px',
+                fontWeight: 600,
+                fontSize: 15
               }}>
-                {calculateScore(examQuestions, viewResult.answers)} / {examQuestions.length}
+                Your answer: {viewResult.answers?.[idx] ?? <i>Not answered</i>}
+              </span>
+              <span style={{
+                background: '#f5f5f5',
+                color: q.type === 'likert' ? '#388e3c' : '#43a047',
+                borderRadius: 6,
+                padding: '3px 12px',
+                fontWeight: 600,
+                fontSize: 15
+              }}>
+                {q.type === 'likert'
+                  ? 'Always Correct'
+                  : (
+                    q.correctAnswer !== undefined && q.correctAnswer !== null && q.correctAnswer !== ""
+                      ? `Correct Answer: ${q.correctAnswer}`
+                      : <i>Not set</i>
+                  )
+                }
               </span>
             </div>
-          </div>
-        )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No questions found for this exam.</p>
+    )}
+    <div style={{
+      marginTop: 18,
+      fontWeight: 800,
+      fontSize: 18,
+      color: '#1976d2',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10
+    }}>
+      Score:
+      <span style={{
+        background: '#e3e8f7',
+        color: '#1976d2',
+        borderRadius: 8,
+        padding: '6px 18px',
+        fontWeight: 800,
+        fontSize: 18
+      }}>
+        {calculateScore(examQuestions, viewResult.answers)} / {examQuestions.length}
+      </span>
+    </div>
+  </div>
+)}
       </div>
     </div>
   </div>
