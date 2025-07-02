@@ -17,14 +17,16 @@ export default function ResultsPage({ user }) {
   const [examQuestions, setExamQuestions] = useState([]);
   const navigate = useNavigate();
 
-  // Scoring function: Likert is always correct
+  // Scoring function: Likert is always correct, MCQ uses index comparison
   function calculateScore(questions, answers) {
     let score = 0;
     questions.forEach((q, idx) => {
       if (q.type === 'likert') {
         score++; // Always count Likert as correct
       } else if (q.type === 'mcq') {
-        if (q.correctAnswer && answers[idx] === q.correctAnswer) score++;
+        // Compare index to correct answer index
+        const correctIdx = q.options.findIndex(opt => opt === q.correctAnswer);
+        if (String(correctIdx) === answers[idx]) score++;
       } else if (q.type === 'text') {
         if (
           answers[idx] &&
@@ -37,8 +39,6 @@ export default function ResultsPage({ user }) {
     });
     return score;
   }
-
-  // ... (rest of your code up to the modal, unchanged)
 
   // Fetch results
   const refetchResults = async () => {
@@ -70,8 +70,7 @@ export default function ResultsPage({ user }) {
     };
     fetchExams();
   }, []);
-
-  // Filter results
+    // Filter results
   const filteredResults = results.filter(result => {
     const nameMatch = (result.userName || result.userId).toLowerCase().includes(search.toLowerCase());
     const examMatch = examFilter ? result.examId === examFilter : true;
@@ -80,7 +79,8 @@ export default function ResultsPage({ user }) {
       : true;
     return nameMatch && examMatch && dateMatch;
   });
-    return (
+
+  return (
     <div style={{ maxWidth: 1100, margin: '40px auto', background: '#fff', borderRadius: 18, boxShadow: '0 8px 32px #cfd8dc', padding: 32, minHeight: 400 }}>
       <button
         onClick={() => navigate('/')}
@@ -351,158 +351,162 @@ export default function ResultsPage({ user }) {
       )}
             {/* View Result Modal */}
       {viewResult && (
-    <div
-    style={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.25)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}
-    onClick={() => setViewResult(null)}
-  >
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 18,
-        padding: '0 0 32px 0',
-        minWidth: 400,
-        maxWidth: 480,
-        boxShadow: '0 8px 32px #cfd8dc',
-        position: 'relative',
-        fontFamily: 'Inter, Segoe UI, Arial, sans-serif'
-      }}
-      onClick={e => e.stopPropagation()}
-    >
-      {/* Header */}
-      <div style={{
-        background: '#1976d2',
-        color: '#fff',
-        borderTopLeftRadius: 18,
-        borderTopRightRadius: 18,
-        padding: '20px 32px 16px 32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <div style={{ fontWeight: 800, fontSize: 20 }}>
-          Candidate: <span style={{ fontWeight: 600 }}>{viewResult.userName || viewResult.userId}</span>
-        </div>
-        <button
+        <div
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
           onClick={() => setViewResult(null)}
-          style={{
-            background: '#d32f2f',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '6px 16px',
-            fontWeight: 700,
-            fontSize: 15,
-            cursor: 'pointer',
-            marginLeft: 12
-          }}
         >
-          Close
-        </button>
-      </div>
-      <div style={{ padding: '24px 32px 0 32px' }}>
-        <div style={{ fontSize: 16, marginBottom: 6, color: '#1976d2', fontWeight: 700 }}>
-          Exam: <span style={{ color: '#222', fontWeight: 600 }}>{examTitles[viewResult.examId] || viewResult.examId}</span>
-        </div>
-        <div style={{ fontSize: 15, marginBottom: 18, color: '#555' }}>
-          Submitted: {viewResult.submittedAt?.toDate?.().toLocaleString?.() || ''}
-        </div>
-        <button
-          onClick={() => setShowAnswers(s => !s)}
-          style={{
-            background: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '8px 22px',
-            fontWeight: 700,
-            fontSize: 16,
-            marginBottom: 18,
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px #e3e3e3'
-          }}
-        >
-          {showAnswers ? 'Hide Answers' : 'Show Answers'}
-        </button>
-        {showAnswers && (
-  <div>
-    <hr style={{ border: 'none', borderTop: '1.5px solid #e3e8f7', margin: '18px 0' }} />
-    {examQuestions.length > 0 ? (
-      <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-        {examQuestions.map((q, idx) => (
-          <li key={idx} style={{ marginBottom: 18 }}>
-            <div style={{ fontWeight: 700, marginBottom: 4, color: '#1976d2' }}>
-              Q{idx + 1}: <span style={{ color: '#222', fontWeight: 600 }}>{q.question || q.text}</span>
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 18,
+              padding: '0 0 32px 0',
+              minWidth: 400,
+              maxWidth: 480,
+              boxShadow: '0 8px 32px #cfd8dc',
+              position: 'relative',
+              fontFamily: 'Inter, Segoe UI, Arial, sans-serif'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{
+              background: '#1976d2',
+              color: '#fff',
+              borderTopLeftRadius: 18,
+              borderTopRightRadius: 18,
+              padding: '20px 32px 16px 32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ fontWeight: 800, fontSize: 20 }}>
+                Candidate: <span style={{ fontWeight: 600 }}>{viewResult.userName || viewResult.userId}</span>
+              </div>
+              <button
+                onClick={() => setViewResult(null)}
+                style={{
+                  background: '#d32f2f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '6px 16px',
+                  fontWeight: 700,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  marginLeft: 12
+                }}
+              >
+                Close
+              </button>
             </div>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 2 }}>
-              <span style={{
-                background: '#e3e8f7',
-                color: '#1976d2',
-                borderRadius: 6,
-                padding: '3px 12px',
-                fontWeight: 600,
-                fontSize: 15
-              }}>
-                Your answer: {viewResult.answers?.[idx] ?? <i>Not answered</i>}
-              </span>
-              <span style={{
-                background: '#f5f5f5',
-                color: q.type === 'likert' ? '#388e3c' : '#43a047',
-                borderRadius: 6,
-                padding: '3px 12px',
-                fontWeight: 600,
-                fontSize: 15
-              }}>
-                {q.type === 'likert'
-                  ? 'Always Correct'
-                  : (
-                    q.correctAnswer !== undefined && q.correctAnswer !== null && q.correctAnswer !== ""
-                      ? `Correct Answer: ${q.correctAnswer}`
-                      : <i>Not set</i>
-                  )
-                }
-              </span>
+            <div style={{ padding: '24px 32px 0 32px' }}>
+              <div style={{ fontSize: 16, marginBottom: 6, color: '#1976d2', fontWeight: 700 }}>
+                Exam: <span style={{ color: '#222', fontWeight: 600 }}>{examTitles[viewResult.examId] || viewResult.examId}</span>
+              </div>
+              <div style={{ fontSize: 15, marginBottom: 18, color: '#555' }}>
+                Submitted: {viewResult.submittedAt?.toDate?.().toLocaleString?.() || ''}
+              </div>
+              <button
+                onClick={() => setShowAnswers(s => !s)}
+                style={{
+                  background: '#1976d2',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '8px 22px',
+                  fontWeight: 700,
+                  fontSize: 16,
+                  marginBottom: 18,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #e3e3e3'
+                }}
+              >
+                {showAnswers ? 'Hide Answers' : 'Show Answers'}
+              </button>
+              {showAnswers && (
+                <div>
+                  <hr style={{ border: 'none', borderTop: '1.5px solid #e3e8f7', margin: '18px 0' }} />
+                  {examQuestions.length > 0 ? (
+                    <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
+                      {examQuestions.map((q, idx) => (
+                        <li key={idx} style={{ marginBottom: 18 }}>
+                          <div style={{ fontWeight: 700, marginBottom: 4, color: '#1976d2' }}>
+                            Q{idx + 1}: <span style={{ color: '#222', fontWeight: 600 }}>{q.question || q.text}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 2 }}>
+                            <span style={{
+                              background: '#e3e8f7',
+                              color: '#1976d2',
+                              borderRadius: 6,
+                              padding: '3px 12px',
+                              fontWeight: 600,
+                              fontSize: 15
+                            }}>
+                              Your answer: {
+                                q.type === 'mcq'
+                                  ? (q.options?.[Number(viewResult.answers?.[idx])] ?? <i>Not answered</i>)
+                                  : (viewResult.answers?.[idx] ?? <i>Not answered</i>)
+                              }
+                            </span>
+                            <span style={{
+                              background: '#f5f5f5',
+                              color: q.type === 'likert' ? '#388e3c' : '#43a047',
+                              borderRadius: 6,
+                              padding: '3px 12px',
+                              fontWeight: 600,
+                              fontSize: 15
+                            }}>
+                              {q.type === 'likert'
+                                ? 'Always Correct'
+                                : (
+                                  q.correctAnswer !== undefined && q.correctAnswer !== null && q.correctAnswer !== ""
+                                    ? `Correct Answer: ${q.correctAnswer}`
+                                    : <i>Not set</i>
+                                )
+                              }
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No questions found for this exam.</p>
+                  )}
+                  <div style={{
+                    marginTop: 18,
+                    fontWeight: 800,
+                    fontSize: 18,
+                    color: '#1976d2',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10
+                  }}>
+                    Score:
+                    <span style={{
+                      background: '#e3e8f7',
+                      color: '#1976d2',
+                      borderRadius: 8,
+                      padding: '6px 18px',
+                      fontWeight: 800,
+                      fontSize: 18
+                    }}>
+                      {calculateScore(examQuestions, viewResult.answers)} / {examQuestions.length}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p>No questions found for this exam.</p>
-    )}
-    <div style={{
-      marginTop: 18,
-      fontWeight: 800,
-      fontSize: 18,
-      color: '#1976d2',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 10
-    }}>
-      Score:
-      <span style={{
-        background: '#e3e8f7',
-        color: '#1976d2',
-        borderRadius: 8,
-        padding: '6px 18px',
-        fontWeight: 800,
-        fontSize: 18
-      }}>
-        {calculateScore(examQuestions, viewResult.answers)} / {examQuestions.length}
-      </span>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-      </div>
-    </div>
-  </div>
-)}
-    </div> // closes the main container div
-  );      // closes the return (
-}         // closes the function
+  );
+}

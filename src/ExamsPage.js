@@ -16,6 +16,7 @@ export default function ExamsPage({ user }) {
   const [sendExamId, setSendExamId] = useState(null);
   const [sendToUser, setSendToUser] = useState('');
   const [showSendModal, setShowSendModal] = useState(false);
+  const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
   // Fetch exams and users
@@ -47,7 +48,20 @@ export default function ExamsPage({ user }) {
     };
     fetchUsers();
   }, [user]);
-    // Admin: Create exam
+
+  // Fetch user results to determine taken exams
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (user?.role === "user" && user?.uid) {
+        const q = query(collection(db, 'results'), where('userId', '==', user.uid));
+        const snapshot = await getDocs(q);
+        setResults(snapshot.docs.map(doc => doc.data()));
+      }
+    };
+    fetchResults();
+  }, [user]);
+
+  // Admin: Create exam
   const handleCreateExam = async (e) => {
     e.preventDefault();
     const sanitizedQuestions = questions.map(q => ({
@@ -60,7 +74,7 @@ export default function ExamsPage({ user }) {
       title: title || "",
       description: description || "",
       questions: sanitizedQuestions,
-      assignedTo: [] // Exams are created unassigned
+      assignedTo: []
     });
     setTitle('');
     setDescription('');
@@ -408,7 +422,7 @@ export default function ExamsPage({ user }) {
             ))}
           </ul>
         )}
-                {/* Send to User Modal */}
+        {/* Send to User Modal */}
         {showSendModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -479,7 +493,12 @@ export default function ExamsPage({ user }) {
       </div>
     );
   }
-  // --- User UI ---
+    // --- User UI ---
+  // Split exams into assigned and taken
+  const takenExamIds = results.map(r => r.examId);
+  const assignedExams = exams.filter(exam => !takenExamIds.includes(exam.id));
+  const takenExams = exams.filter(exam => takenExamIds.includes(exam.id));
+
   return (
     <div style={{
       maxWidth: 700,
@@ -511,10 +530,10 @@ export default function ExamsPage({ user }) {
       <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 24 }}>Assigned Exams</h2>
       {loading ? <p>Loading...</p> : (
         <ul style={{ padding: 0, listStyle: 'none' }}>
-          {exams.length === 0 ? (
+          {assignedExams.length === 0 ? (
             <li style={{ color: '#888', fontSize: 18 }}>No exams assigned to you yet.</li>
           ) : (
-            exams.map(exam => (
+            assignedExams.map(exam => (
               <li
                 key={exam.id}
                 style={{
@@ -527,9 +546,19 @@ export default function ExamsPage({ user }) {
                   boxShadow: '0 2px 8px #e3e3e3',
                   cursor: 'pointer',
                   position: 'relative',
-                  transition: 'box-shadow 0.2s, transform 0.2s'
+                  transition: 'box-shadow 0.2s, background 0.2s, border 0.2s'
                 }}
                 onClick={() => navigate(`/exams/${exam.id}/take`)}
+                onMouseOver={e => {
+                  e.currentTarget.style.background = '#e3e8f7';
+                  e.currentTarget.style.boxShadow = '0 4px 16px #b0bec5';
+                  e.currentTarget.style.border = '2px solid #1976d2';
+                }}
+                onMouseOut={e => {
+                  e.currentTarget.style.background = '#f5f7fa';
+                  e.currentTarget.style.boxShadow = '0 2px 8px #e3e3e3';
+                  e.currentTarget.style.border = 'none';
+                }}
               >
                 <strong>{exam.title}</strong>
                 <div style={{ color: '#1976d2', fontSize: 15 }}>{exam.description}</div>
@@ -538,6 +567,37 @@ export default function ExamsPage({ user }) {
           )}
         </ul>
       )}
+            {/* Taken Exams Section */}
+      <h2 style={{ color: '#388e3c', fontWeight: 800, margin: '32px 0 18px 0' }}>Taken Exams</h2>
+      <ul style={{ padding: 0, listStyle: 'none' }}>
+        {takenExams.length === 0 ? (
+          <li style={{ color: '#888', fontSize: 18 }}>No taken exams yet.</li>
+        ) : (
+          takenExams.map(exam => (
+            <li
+              key={exam.id}
+              style={{
+                background: '#e8f5e9',
+                borderRadius: 10,
+                padding: '14px 18px',
+                marginBottom: 12,
+                fontSize: 18,
+                color: '#22223b',
+                boxShadow: '0 2px 8px #e3e3e3',
+                cursor: 'not-allowed',
+                opacity: 0.7,
+                border: '2px solid #43a047',
+                position: 'relative'
+              }}
+              title="You have already taken this exam"
+            >
+              <strong>{exam.title}</strong>
+              <div style={{ color: '#388e3c', fontSize: 15, fontWeight: 700 }}>Already taken</div>
+              <div style={{ color: '#1976d2', fontSize: 15 }}>{exam.description}</div>
+            </li>
+          ))
+        )}
+      </ul>
     </div>
   );
 }
