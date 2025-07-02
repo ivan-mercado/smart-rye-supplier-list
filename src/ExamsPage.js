@@ -49,7 +49,6 @@ export default function ExamsPage({ user }) {
     fetchUsers();
   }, [user]);
 
-  // Fetch user results to determine taken exams
   useEffect(() => {
     const fetchResults = async () => {
       if (user?.role === "user" && user?.uid) {
@@ -60,8 +59,7 @@ export default function ExamsPage({ user }) {
     };
     fetchResults();
   }, [user]);
-
-  // Admin: Create exam
+    // Admin: Create exam
   const handleCreateExam = async (e) => {
     e.preventDefault();
     const sanitizedQuestions = questions.map(q => ({
@@ -92,17 +90,123 @@ export default function ExamsPage({ user }) {
   // --- Admin UI ---
   if (user?.role === "admin") {
     return (
-      <div style={{
-        maxWidth: 700,
-        margin: '40px auto',
-        padding: 32,
-        background: 'rgba(255,255,255,0.95)',
-        borderRadius: 24,
-        boxShadow: '0 8px 32px #cfd8dc',
-        minHeight: 500
-      }}>
+      <div className="exams-admin-root">
+        <style>
+          {`
+          .exams-admin-root {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 32px 24px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #cfd8dc;
+            min-height: 500px;
+          }
+          .exams-admin-form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 18px;
+          }
+          .exams-admin-form-row input,
+          .exams-admin-form-row textarea {
+            font-size: 18px;
+            border-radius: 8px;
+            border: 1.5px solid #b0bec5;
+            background: #f5f7fa;
+            padding: 12px;
+          }
+          .exams-admin-questions {
+            margin-bottom: 40px;
+          }
+          .exams-admin-question-block {
+            margin-bottom: 18px;
+            border: 1px solid #e3e8f7;
+            border-radius: 8px;
+            padding: 12px;
+          }
+          .exams-admin-question-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+          }
+          .exams-admin-question-row select,
+          .exams-admin-question-row input {
+            border-radius: 6px;
+            border: 1.5px solid #b0bec5;
+            font-size: 15px;
+            padding: 6px 10px;
+          }
+          .exams-admin-btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 18px;
+            margin-right: 8px;
+          }
+          .exams-admin-btn.green {
+            background: #43a047;
+            margin-bottom: 0;
+          }
+          .exams-admin-btn.red {
+            background: #e53935;
+            margin-bottom: 0;
+          }
+          .exams-admin-btn.gray {
+            background: #b0bec5;
+            color: #fff;
+            margin-bottom: 0;
+          }
+          .exams-admin-exam-list {
+            padding: 0;
+            list-style: none;
+          }
+          .exams-admin-exam-item {
+            background: #f5f7fa;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            font-size: 18px;
+            color: #22223b;
+            box-shadow: 0 2px 8px #e3e3e3;
+            display: flex;
+            align-items: center;
+          }
+          .exams-admin-exam-item input[type="checkbox"] {
+            margin-right: 12px;
+          }
+          .exams-admin-send-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            min-width: 320px;
+            box-shadow: 0 4px 24px #e3e3e3;
+          }
+          @media (max-width: 700px) {
+            .exams-admin-root {
+              max-width: 99vw;
+              padding: 18px 2vw;
+            }
+            .exams-admin-form-row {
+              flex-direction: column;
+              gap: 10px;
+            }
+            .exams-admin-send-modal {
+              min-width: 0;
+              width: 94vw;
+              padding: 18px 4vw;
+            }
+          }
+          `}
+        </style>
         <button
           onClick={() => navigate('/')}
+          className="exams-admin-btn"
           style={{
             background: '#1976d2',
             color: '#fff',
@@ -120,231 +224,152 @@ export default function ExamsPage({ user }) {
         </button>
         <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 24 }}>Create New Exam</h2>
         <form onSubmit={handleCreateExam} style={{ marginBottom: 40 }}>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
+          <div className="exams-admin-form-row">
             <input
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Exam Title"
               required
-              style={{
-                flex: 2,
-                padding: 12,
-                borderRadius: 8,
-                border: '1.5px solid #b0bec5',
-                fontSize: 18,
-                background: '#f5f7fa'
-              }}
             />
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Description"
-              style={{
-                flex: 3,
-                padding: 12,
-                borderRadius: 8,
-                border: '1.5px solid #b0bec5',
-                fontSize: 18,
-                background: '#f5f7fa',
-                minHeight: 44
-              }}
+              style={{ minHeight: 44 }}
             />
           </div>
           <h4 style={{ color: '#1976d2', fontWeight: 700, marginBottom: 10 }}>Questions</h4>
-          {questions.map((q, idx) => (
-            <div key={idx} style={{ marginBottom: 18, border: '1px solid #e3e8f7', borderRadius: 8, padding: 12 }}>
-              <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-                <select
-                  value={q.type}
-                  onChange={e => {
-                    const newQuestions = [...questions];
-                    newQuestions[idx].type = e.target.value;
-                    if (e.target.value === 'mcq') newQuestions[idx].options = [''];
-                    if (e.target.value !== 'mcq') newQuestions[idx].options = [''];
-                    setQuestions(newQuestions);
-                  }}
-                  style={{
-                    borderRadius: 6,
-                    border: '1.5px solid #b0bec5',
-                    fontSize: 15,
-                    padding: '6px 10px'
-                  }}
-                >
-                  <option value="text">Text</option>
-                  <option value="mcq">MCQ</option>
-                  <option value="likert">Likert (1-5)</option>
-                </select>
-                <input
-                  value={q.question}
-                  onChange={e => {
-                    const newQuestions = [...questions];
-                    newQuestions[idx].question = e.target.value;
-                    setQuestions(newQuestions);
-                  }}
-                  placeholder="Question"
-                  required
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 6,
-                    border: '1.5px solid #b0bec5',
-                    fontSize: 16,
-                    background: '#f5f7fa'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
-                  style={{
-                    background: '#e53935',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '6px 14px',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-              {/* MCQ Options */}
-              {q.type === 'mcq' && (
-                <div style={{ marginLeft: 0 }}>
-                  {q.options.map((opt, oidx) => (
-                    <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <input
-                        value={opt}
-                        onChange={e => {
-                          const newQuestions = [...questions];
-                          newQuestions[idx].options[oidx] = e.target.value;
-                          setQuestions(newQuestions);
-                        }}
-                        placeholder={`Option ${oidx + 1}`}
-                        style={{
-                          flex: 1,
-                          padding: 8,
-                          borderRadius: 6,
-                          border: '1.5px solid #b0bec5',
-                          fontSize: 15,
-                          background: '#f5f7fa'
-                        }}
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newQuestions = [...questions];
-                          newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
-                          setQuestions(newQuestions);
-                        }}
-                        style={{
-                          background: '#e53935',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 6,
-                          padding: '2px 10px',
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
+          <div className="exams-admin-questions">
+            {questions.map((q, idx) => (
+              <div key={idx} className="exams-admin-question-block">
+                <div className="exams-admin-question-row">
+                  <select
+                    value={q.type}
+                    onChange={e => {
                       const newQuestions = [...questions];
-                      newQuestions[idx].options.push('');
+                      newQuestions[idx].type = e.target.value;
+                      if (e.target.value === 'mcq') newQuestions[idx].options = [''];
+                      if (e.target.value !== 'mcq') newQuestions[idx].options = [''];
                       setQuestions(newQuestions);
                     }}
-                    style={{
-                      background: '#1976d2',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 6,
-                      padding: '6px 14px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      marginTop: 4
-                    }}
                   >
-                    + Add Option
+                    <option value="text">Text</option>
+                    <option value="mcq">MCQ</option>
+                    <option value="likert">Likert (1-5)</option>
+                  </select>
+                  <input
+                    value={q.question}
+                    onChange={e => {
+                      const newQuestions = [...questions];
+                      newQuestions[idx].question = e.target.value;
+                      setQuestions(newQuestions);
+                    }}
+                    placeholder="Question"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="exams-admin-btn red"
+                    onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
+                  >
+                    Remove
                   </button>
-                  {/* MCQ Correct Answer */}
+                </div>
+                {/* MCQ Options */}
+                {q.type === 'mcq' && (
+                  <div style={{ marginLeft: 0 }}>
+                    {q.options.map((opt, oidx) => (
+                      <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <input
+                          value={opt}
+                          onChange={e => {
+                            const newQuestions = [...questions];
+                            newQuestions[idx].options[oidx] = e.target.value;
+                            setQuestions(newQuestions);
+                          }}
+                          placeholder={`Option ${oidx + 1}`}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="exams-admin-btn red"
+                          onClick={() => {
+                            const newQuestions = [...questions];
+                            newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
+                            setQuestions(newQuestions);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="exams-admin-btn"
+                      onClick={() => {
+                        const newQuestions = [...questions];
+                        newQuestions[idx].options.push('');
+                        setQuestions(newQuestions);
+                      }}
+                      style={{ marginTop: 4 }}
+                    >
+                      + Add Option
+                    </button>
+                    {/* MCQ Correct Answer */}
+                    <div style={{ marginTop: 8 }}>
+                      <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
+                      <select
+                        value={q.correctAnswer || ''}
+                        onChange={e => {
+                          const newQuestions = [...questions];
+                          newQuestions[idx].correctAnswer = e.target.value;
+                          setQuestions(newQuestions);
+                        }}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <option value="">Select correct option</option>
+                        {q.options.map((opt, oidx) => (
+                          <option key={oidx} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+                {/* Text Correct Answer */}
+                {q.type === 'text' && (
                   <div style={{ marginTop: 8 }}>
                     <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-                    <select
+                    <input
                       value={q.correctAnswer || ''}
                       onChange={e => {
                         const newQuestions = [...questions];
                         newQuestions[idx].correctAnswer = e.target.value;
                         setQuestions(newQuestions);
                       }}
-                      style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
-                    >
-                      <option value="">Select correct option</option>
-                      {q.options.map((opt, oidx) => (
-                        <option key={oidx} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                      style={{ marginLeft: 8 }}
+                      placeholder="Correct answer"
+                    />
                   </div>
-                </div>
-              )}
-              {/* Text Correct Answer */}
-              {q.type === 'text' && (
-                <div style={{ marginTop: 8 }}>
-                  <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-                  <input
-                    value={q.correctAnswer || ''}
-                    onChange={e => {
-                      const newQuestions = [...questions];
-                      newQuestions[idx].correctAnswer = e.target.value;
-                      setQuestions(newQuestions);
-                    }}
-                    style={{ marginLeft: 8, borderRadius: 6, border: '1.5px solid #b0bec5', fontSize: 15, padding: '6px 10px' }}
-                    placeholder="Correct answer"
-                  />
-                </div>
-              )}
-              {/* Likert: (optional, usually not scored) */}
-              {q.type === 'likert' && (
-                <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
-                  Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+                {/* Likert: (optional, usually not scored) */}
+                {q.type === 'likert' && (
+                  <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
+                    Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
           <button
             type="button"
+            className="exams-admin-btn"
             onClick={() => setQuestions([...questions, { type: 'text', question: '', options: [''], correctAnswer: '' }])}
-            style={{
-              background: '#1976d2',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 6,
-              padding: '8px 18px',
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: 'pointer',
-              marginBottom: 18
-            }}
           >
             + Add Question
           </button>
           <button
             type="submit"
-            style={{
-              background: '#43a047',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 6,
-              padding: '8px 18px',
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: 'pointer'
-            }}
+            className="exams-admin-btn green"
           >
             Create Exam
           </button>
@@ -353,36 +378,16 @@ export default function ExamsPage({ user }) {
         <div style={{ marginBottom: 16 }}>
           <button
             disabled={selectedExams.length === 0}
+            className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : " red"}`}
             onClick={handleDeleteSelected}
-            style={{
-              background: selectedExams.length === 0 ? '#b0bec5' : '#d32f2f',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '8px 18px',
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: selectedExams.length === 0 ? 'not-allowed' : 'pointer',
-              marginBottom: 12
-            }}
           >
             Delete Selected
           </button>
         </div>
         {loading ? <p>Loading...</p> : (
-          <ul style={{ padding: 0, listStyle: 'none' }}>
+          <ul className="exams-admin-exam-list">
             {exams.map(exam => (
-              <li key={exam.id} style={{
-                background: '#f5f7fa',
-                borderRadius: 10,
-                padding: '14px 18px',
-                marginBottom: 12,
-                fontSize: 18,
-                color: '#22223b',
-                boxShadow: '0 2px 8px #e3e3e3',
-                display: 'flex',
-                alignItems: 'center'
-              }}>
+              <li key={exam.id} className="exams-admin-exam-item">
                 <input
                   type="checkbox"
                   checked={selectedExams.includes(exam.id)}
@@ -393,7 +398,6 @@ export default function ExamsPage({ user }) {
                         : prev.filter(id => id !== exam.id)
                     );
                   }}
-                  style={{ marginRight: 12 }}
                 />
                 <div style={{ flex: 1 }}>
                   <strong>{exam.title}</strong>
@@ -404,17 +408,8 @@ export default function ExamsPage({ user }) {
                     setSendExamId(exam.id);
                     setShowSendModal(true);
                   }}
-                  style={{
-                    marginLeft: 16,
-                    background: '#1976d2',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '6px 14px',
-                    fontWeight: 700,
-                    fontSize: 15,
-                    cursor: 'pointer'
-                  }}
+                  className="exams-admin-btn"
+                  style={{ marginLeft: 16 }}
                 >
                   Send to User
                 </button>
@@ -428,9 +423,7 @@ export default function ExamsPage({ user }) {
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
             background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
-            <div style={{
-              background: '#fff', borderRadius: 12, padding: 32, minWidth: 320, boxShadow: '0 4px 24px #e3e3e3'
-            }}>
+            <div className="exams-admin-send-modal">
               <h3 style={{ marginBottom: 18 }}>Send Exam to User</h3>
               <select
                 value={sendToUser}
@@ -445,6 +438,8 @@ export default function ExamsPage({ user }) {
               <div style={{ display: 'flex', gap: 12 }}>
                 <button
                   disabled={!sendToUser}
+                  className="exams-admin-btn"
+                  style={{ background: '#1976d2', color: '#fff' }}
                   onClick={async () => {
                     if (!sendToUser) return;
                     const examRef = doc(db, 'exams', sendExamId);
@@ -455,33 +450,15 @@ export default function ExamsPage({ user }) {
                     setSendToUser('');
                     setSendExamId(null);
                   }}
-                  style={{
-                    background: '#1976d2',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 24px',
-                    fontWeight: 700,
-                    fontSize: 16,
-                    cursor: !sendToUser ? 'not-allowed' : 'pointer'
-                  }}
                 >
                   Send
                 </button>
                 <button
+                  className="exams-admin-btn gray"
                   onClick={() => {
                     setShowSendModal(false);
                     setSendToUser('');
                     setSendExamId(null);
-                  }}
-                  style={{
-                    background: '#b0bec5',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 24px',
-                    fontWeight: 700,
-                    fontSize: 16
                   }}
                 >
                   Cancel
@@ -494,7 +471,6 @@ export default function ExamsPage({ user }) {
     );
   }
     // --- User UI ---
-  // Split exams into assigned and taken
   const takenExamIds = results.map(r => r.examId);
   const assignedExams = exams.filter(exam => !takenExamIds.includes(exam.id));
   const takenExams = exams.filter(exam => takenExamIds.includes(exam.id));
@@ -567,7 +543,7 @@ export default function ExamsPage({ user }) {
           )}
         </ul>
       )}
-            {/* Taken Exams Section */}
+      {/* Taken Exams Section */}
       <h2 style={{ color: '#388e3c', fontWeight: 800, margin: '32px 0 18px 0' }}>Taken Exams</h2>
       <ul style={{ padding: 0, listStyle: 'none' }}>
         {takenExams.length === 0 ? (
