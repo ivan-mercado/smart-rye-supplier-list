@@ -279,28 +279,18 @@ export default function MenuPage({ user }) {
 </div>
 
       {/* Main Centered Content */}
-      <div className="menu-center-content">
-        <div className="menu-welcome-card">
-          <div className="menu-welcome-title">
-            Welcome to Smart Rye Automatics
-          </div>
-          <div className="menu-welcome-desc">
-            Manage your suppliers, track your business, and grow with confidence.
-          </div>
-          <div className="menu-welcome-svg">
-            <svg width="60" height="60" viewBox="0 0 120 120" fill="none">
-              <circle cx="60" cy="60" r="56" fill="#e3f0ff" stroke="#1976d2" strokeWidth="4"/>
-              <rect x="35" y="70" width="50" height="18" rx="9" fill="#43a047"/>
-              <rect x="50" y="35" width="20" height="40" rx="10" fill="#1976d2"/>
-              <circle cx="60" cy="30" r="12" fill="#43a047" stroke="#1976d2" strokeWidth="3"/>
-              <ellipse cx="60" cy="30" rx="5" ry="7" fill="#fff" opacity="0.7"/>
-            </svg>
-          </div>
-          <div className="menu-welcome-footer">
-            Get started by choosing an option from the menu.
-          </div>
-        </div>
-      </div>
+      <div style={{ textAlign: 'center', padding: 24 }}>
+  <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
+    🚧 Website Under Development
+  </div>
+  <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
+    This site is currently a work in progress.<br />
+    Features and content are being added by the developer.
+  </div>
+  <div style={{ fontSize: 15, color: '#888' }}>
+    Thank you for your patience!
+  </div>
+</div>
             {/* Bottom Navigation for Mobile */}
       <nav className="menu-bottom-nav">
         {bottomNavItems.map((item, idx) => (

@@ -19,6 +19,7 @@ export default function TakeExamPage({ user }) {
   const [answers, setAnswers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [nameEntered, setNameEntered] = useState(false);
@@ -41,7 +42,7 @@ export default function TakeExamPage({ user }) {
   }, [examId, navigate]);
 
   if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
-    return (
+  return (
     <div style={{
       minHeight: '100vh',
       background: '#f5f7fa',
@@ -88,7 +89,7 @@ export default function TakeExamPage({ user }) {
         </div>
       ) : (
         <>
-          {/* Top Bar */}
+                  {/* Top Bar */}
           <div style={{
             background: '#1976d2',
             color: '#fff',
@@ -97,27 +98,12 @@ export default function TakeExamPage({ user }) {
             fontSize: isMobile ? 18 : 22,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-start',
             width: '100%',
             borderRadius: isMobile ? 0 : 18,
             marginBottom: isMobile ? 0 : 0
           }}>
             <span>{exam.title}</span>
-            <button
-              onClick={() => navigate('/exams')}
-              style={{
-                background: '#fff',
-                color: '#1976d2',
-                border: 'none',
-                borderRadius: 8,
-                padding: isMobile ? '7px 14px' : '8px 18px',
-                fontWeight: 700,
-                fontSize: isMobile ? 15 : 16,
-                cursor: 'pointer'
-              }}
-            >
-              Exit
-            </button>
           </div>
           <div style={{
             display: 'flex',
@@ -183,12 +169,14 @@ export default function TakeExamPage({ user }) {
                 ))}
               </div>
             </div>
-                        {/* Main: Question and Options */}
+            {/* Main: Question and Options */}
             <div style={{
               flex: 1,
               padding: isMobile ? '18px 8px' : '32px 36px',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              minHeight: 400,
+              position: 'relative'
             }}>
               <div style={{ fontWeight: 700, fontSize: isMobile ? 17 : 19, marginBottom: 10 }}>
                 Question {currentQ + 1} of {exam.questions.length}
@@ -294,21 +282,19 @@ export default function TakeExamPage({ user }) {
                   Save & Next
                 </button>
               </div>
+              {/* Finish Exam Button - lower right */}
               <form
-                onSubmit={async e => {
+                onSubmit={e => {
                   e.preventDefault();
-                  setSubmitting(true);
-                  await addDoc(collection(db, 'results'), {
-                    examId: exam.id,
-                    userId: user.uid,
-                    userName: fullName,
-                    answers,
-                    submittedAt: serverTimestamp()
-                  });
-                  setSubmitting(false);
-                  setSubmitted(true);
+                  if (submitting) return;
+                  setShowConfirm(true);
                 }}
-                style={{ marginTop: 30 }}
+                style={{
+                  marginTop: 30,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center'
+                }}
               >
                 {!submitted ? (
                   <button
@@ -320,21 +306,107 @@ export default function TakeExamPage({ user }) {
                       border: 'none',
                       borderRadius: 8,
                       padding: isMobile ? '14px 0' : '14px 32px',
-                      width: isMobile ? '100%' : undefined,
                       fontWeight: 700,
                       fontSize: isMobile ? 17 : 19,
                       cursor: submitting ? 'not-allowed' : 'pointer',
-                      marginTop: 10
+                      marginTop: 10,
+                      minWidth: isMobile ? '100%' : 180
                     }}
                   >
-                    {submitting ? 'Submitting...' : 'Submit Answers'}
+                    {submitting ? 'Submitting...' : 'Finish Exam'}
                   </button>
                 ) : (
                   <div style={{ color: '#43a047', fontWeight: 700, fontSize: 18, marginTop: 16 }}>
-                    Exam submitted! Thank you.
+                    Exam submitted! Redirecting...
                   </div>
                 )}
               </form>
+                            {/* Custom Confirmation Modal */}
+              {showConfirm && (
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.25)',
+                    zIndex: 2000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  onClick={() => setShowConfirm(false)}
+                >
+                  <div
+                    style={{
+                      background: '#fff',
+                      borderRadius: 16,
+                      boxShadow: '0 8px 32px #cfd8dc',
+                      padding: '32px 28px 24px 28px',
+                      minWidth: 320,
+                      maxWidth: '90vw',
+                      textAlign: 'center',
+                      position: 'relative'
+                    }}
+                    onClick={e => e.stopPropagation()}
+                    tabIndex={-1}
+                  >
+                    <div style={{ fontSize: 38, color: '#d32f2f', marginBottom: 12 }}>⚠️</div>
+                    <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 10, color: '#222' }}>
+                      Finish Exam?
+                    </div>
+                    <div style={{ color: '#555', fontSize: 16, marginBottom: 24 }}>
+                      Are you sure you want to finish the exam?<br />
+                      <span style={{ color: '#d32f2f', fontWeight: 600 }}>
+                        You won't be able to change your answers after this.
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+                      <button
+                        onClick={() => setShowConfirm(false)}
+                        style={{
+                          background: '#b0bec5',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '10px 28px',
+                          fontWeight: 700,
+                          fontSize: 16,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          setShowConfirm(false);
+                          setSubmitting(true);
+                          await addDoc(collection(db, 'results'), {
+                            examId: exam.id,
+                            userId: user.uid,
+                            userName: fullName,
+                            answers,
+                            submittedAt: serverTimestamp()
+                          });
+                          setSubmitting(false);
+                          setSubmitted(true);
+                          setTimeout(() => navigate('/exams'), 1200);
+                        }}
+                        style={{
+                          background: '#43a047',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '10px 28px',
+                          fontWeight: 700,
+                          fontSize: 16,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Finish Exam
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </>
