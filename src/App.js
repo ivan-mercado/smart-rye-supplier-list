@@ -28,6 +28,8 @@ const MESSAGING_APPS = [
   'Phone Only',
 ];
 
+// ...AddSupplier, AuthForm, SupplierList, and styles (unchanged, as in your code)...
+
 function AddSupplier({ onAdd }) {
   const [form, setForm] = useState({
     name: '',
@@ -947,42 +949,56 @@ function App() {
     items: '',
   });
   const [expandedRows, setExpandedRows] = useState([]);
-  
 
+  // --- USER/ROLE LOADING LOGIC ---
   const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = auth.onAuthStateChanged(setUser);
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        // Fetch user role from Firestore
+        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+        setUser({ ...firebaseUser, ...userDoc.data() });
+      } else {
+        setUser(null);
+      }
+      setLoadingUser(false);
+    });
     return unsubscribe;
   }, []);
-  
-  if (user?.role === "admin") {
-  // Show admin features
-}
-if (user?.role === "user") {
-  // Show user features
-}
 
-  // Real-time Firestore listener
+  // Real-time Firestore listener for suppliers
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
+    let q;
+    if (user.role === "admin") {
+      q = query(collection(db, 'suppliers'));
+    } else {
+      q = query(collection(db, 'suppliers'), where('userId', '==', user.uid));
+    }
+    const unsub = onSnapshot(q, (snapshot) => {
+      setSuppliers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+    return () => unsub();
+  }, [user]);
 
-  let q;
-  if (user.role === "admin") {
-    // Admin: get all suppliers
-    q = query(collection(db, 'suppliers'));
-  } else {
-    // User: get only their suppliers
-    q = query(collection(db, 'suppliers'), where('userId', '==', user.uid));
+  if (loadingUser) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 22,
+        color: "#1976d2",
+        fontWeight: 700
+      }}>
+        Loading...
+      </div>
+    );
   }
-
-  const unsub = onSnapshot(q, (snapshot) => {
-    setSuppliers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  });
-
-  return () => unsub();
-}, [user]);
 
   if (!user) {
     return <AuthForm onAuth={setUser} />;
@@ -1002,8 +1018,7 @@ if (user?.role === "user") {
       await deleteDoc(doc(db, 'suppliers', id));
     }
   };
-
-  return (
+    return (
     <div style={{
       maxWidth: 1300,
       margin: '40px auto',
@@ -1016,8 +1031,8 @@ if (user?.role === "user") {
       <Routes>
         <Route path="/" element={<MenuPage user={user} />} />
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
-          <Route path="/results" element={<ResultsPage user={user} />} />
-          <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />
+        <Route path="/results" element={<ResultsPage user={user} />} />
+        <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />
         <Route
           path="/list"
           element={
@@ -1034,8 +1049,8 @@ if (user?.role === "user") {
             />
           }
         />
-           <Route path="/upload-resume" element={<UploadResumePage />} />
-            <Route path="/resumes" element={<ResumesPage />} />
+        <Route path="/upload-resume" element={<UploadResumePage />} />
+        <Route path="/resumes" element={<ResumesPage />} />
         <Route path="/exams" element={<ExamsPage user={user} />} />
         <Route path="*" element={<AddSupplier onAdd={handleAddSupplier} />} />
       </Routes>
