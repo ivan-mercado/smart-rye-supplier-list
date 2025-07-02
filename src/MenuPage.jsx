@@ -23,7 +23,13 @@ export default function MenuPage({ user }) {
         ];
 
   // For bottom nav, only show up to 3 main actions
-  const bottomNavItems = menuItems.slice(0, 3);
+  const bottomNavItems = user?.role === "admin"
+  ? [
+      menuItems[2], // Exam
+      menuItems[3], // Results
+      menuItems[4], // Resumes
+    ]
+  : menuItems.slice(0, 3);
 
   const handleLogout = async () => {
     await signOut(getAuth());
