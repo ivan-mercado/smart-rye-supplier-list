@@ -122,15 +122,15 @@ export default function ResultsPage({ user }) {
           background: #fff;
           color: #1976d2;
           border-radius: 50%;
-          width: 64px;
-          height: 64px;
+          width: 110px;
+          height: 110px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 900;
           font-size: 32px;
           box-shadow: 0 2px 8px #b0bec5;
-          border: 4px solid #1976d2;
+          border: 6px solid #1976d2;
           z-index: 2;
         }
         @media (max-width: 600px) {
@@ -143,12 +143,12 @@ export default function ResultsPage({ user }) {
             margin-bottom: 12px;
           }
           .score-badge-modal {
-            right: 16px;
-            bottom: 16px;
-            width: 48px;
-            height: 48px;
-            font-size: 22px;
-            border-width: 3px;
+            right: 10px;
+            bottom: 10px;
+            width: 80px;
+            height: 80px;
+            font-size: 30px;
+            border-width: 4px;
           }
         }
         `}
@@ -477,9 +477,11 @@ export default function ResultsPage({ user }) {
               </button>
             </div>
             {/* Score Badge in lower right */}
-            <div className="score-badge-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 24 }}>
-  {calculateScore(examQuestions, viewResult.answers)}<span style={{ fontSize: 16, fontWeight: 700, margin: '0 2px' }}>/</span>{examQuestions.length}
-</div>
+            <div className="score-badge-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
+              {calculateScore(examQuestions, viewResult.answers)}
+              <span style={{ fontSize: 22, fontWeight: 700, margin: '0 2px' }}>/</span>
+              {examQuestions.length}
+            </div>
             <div style={{ padding: '24px 32px 0 32px' }}>
               <div style={{ fontSize: 16, marginBottom: 6, color: '#1976d2', fontWeight: 700 }}>
                 Exam: <span style={{ color: '#222', fontWeight: 600 }}>{examTitles[viewResult.examId] || viewResult.examId}</span>
