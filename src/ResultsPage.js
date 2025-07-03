@@ -3,6 +3,14 @@ import { db } from './firebase';
 import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
+const likertLabels = [
+  "Strongly Disagree",
+  "Disagree",
+  "Neutral",
+  "Agree",
+  "Strongly Agree"
+];
+
 export default function ResultsPage({ user }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,8 +83,7 @@ export default function ResultsPage({ user }) {
       : true;
     return nameMatch && examMatch && dateMatch;
   });
-
-  return (
+    return (
     <div style={{ maxWidth: 1100, margin: '40px auto', background: '#fff', borderRadius: 18, boxShadow: '0 8px 32px #cfd8dc', padding: 32, minHeight: 400 }}>
       <style>
         {`
@@ -153,7 +160,7 @@ export default function ResultsPage({ user }) {
         }
         `}
       </style>
-            <button
+      <button
         onClick={() => navigate('/')}
         style={{
           background: '#1976d2',
@@ -535,7 +542,13 @@ export default function ResultsPage({ user }) {
                                 Your answer: {
                                   q.type === 'mcq'
                                     ? (q.options?.[Number(viewResult.answers?.[idx])] ?? <i>Not answered</i>)
-                                    : (viewResult.answers?.[idx] ?? <i>Not answered</i>)
+                                    : q.type === 'likert'
+                                      ? (
+                                          viewResult.answers?.[idx]
+                                            ? `${viewResult.answers[idx]} - ${likertLabels[Number(viewResult.answers[idx]) - 1]}`
+                                            : <i>Not answered</i>
+                                        )
+                                      : (viewResult.answers?.[idx] ?? <i>Not answered</i>)
                                 }
                               </span>
                               <span style={{
