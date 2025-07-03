@@ -16,6 +16,7 @@ export default function ExamsPage({ user }) {
   const [sendExamId, setSendExamId] = useState(null);
   const [sendToUser, setSendToUser] = useState('');
   const [showSendModal, setShowSendModal] = useState(false);
+  const [showMultiSendModal, setShowMultiSendModal] = useState(false);
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ export default function ExamsPage({ user }) {
       setLoading(false);
     };
     if (user) fetchExams();
-  }, [user, showSendModal]);
+  }, [user, showSendModal, showMultiSendModal]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -224,6 +225,7 @@ export default function ExamsPage({ user }) {
         </button>
         <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 24 }}>Create New Exam</h2>
         <form onSubmit={handleCreateExam} style={{ marginBottom: 40 }}>
+          {/* ... your create exam form ... */}
           <div className="exams-admin-form-row">
             <input
               value={title}
@@ -375,13 +377,21 @@ export default function ExamsPage({ user }) {
           </button>
         </form>
         <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 18 }}>All Exams</h2>
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 16, display: 'flex', gap: 10 }}>
           <button
             disabled={selectedExams.length === 0}
             className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : " red"}`}
             onClick={handleDeleteSelected}
           >
             Delete Selected
+          </button>
+          <button
+            disabled={selectedExams.length === 0}
+            className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : ""}`}
+            style={{ background: '#1976d2', color: '#fff' }}
+            onClick={() => setShowMultiSendModal(true)}
+          >
+            Send Multiple Exams
           </button>
         </div>
         {loading ? <p>Loading...</p> : (
@@ -417,7 +427,7 @@ export default function ExamsPage({ user }) {
             ))}
           </ul>
         )}
-        {/* Send to User Modal */}
+                {/* Send to User Modal (single exam) */}
         {showSendModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -426,17 +436,17 @@ export default function ExamsPage({ user }) {
             <div className="exams-admin-send-modal">
               <h3 style={{ marginBottom: 18 }}>Send Exam to User</h3>
               <select
-  value={sendToUser}
-  onChange={e => setSendToUser(e.target.value)}
-  style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
->
-  <option value="">Select user...</option>
-  {allUsers
-    .filter(u => u.role === "user" && !((exams.find(e => e.id === sendExamId)?.assignedTo || []).includes(u.uid)))
-    .map(u => (
-      <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
-  ))}
-</select>
+                value={sendToUser}
+                onChange={e => setSendToUser(e.target.value)}
+                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
+              >
+                <option value="">Select user...</option>
+                {allUsers
+                  .filter(u => u.role === "user" && !((exams.find(e => e.id === sendExamId)?.assignedTo || []).includes(u.uid)))
+                  .map(u => (
+                    <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
+                ))}
+              </select>
               <div style={{ display: 'flex', gap: 12 }}>
                 <button
                   disabled={!sendToUser}
@@ -469,10 +479,62 @@ export default function ExamsPage({ user }) {
             </div>
           </div>
         )}
+        {/* Send Multiple Exams Modal */}
+        {showMultiSendModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+            background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+          }}>
+            <div className="exams-admin-send-modal">
+              <h3 style={{ marginBottom: 18 }}>Send Selected Exams to User</h3>
+              <select
+                value={sendToUser}
+                onChange={e => setSendToUser(e.target.value)}
+                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
+              >
+                <option value="">Select user...</option>
+                {allUsers
+                  .filter(u => u.role === "user")
+                  .map(u => (
+                    <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
+                ))}
+              </select>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  disabled={!sendToUser}
+                  className="exams-admin-btn"
+                  style={{ background: '#1976d2', color: '#fff' }}
+                  onClick={async () => {
+                    if (!sendToUser) return;
+                    for (const examId of selectedExams) {
+                      const examRef = doc(db, 'exams', examId);
+                      await updateDoc(examRef, {
+                        assignedTo: arrayUnion(sendToUser)
+                      });
+                    }
+                    setShowMultiSendModal(false);
+                    setSendToUser('');
+                  }}
+                >
+                  Send
+                </button>
+                <button
+                  className="exams-admin-btn gray"
+                  onClick={() => {
+                    setShowMultiSendModal(false);
+                    setSendToUser('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
-    // --- User UI ---
+  // --- User UI ---
   const takenExamIds = results.map(r => r.examId);
   const assignedExams = exams.filter(exam => !takenExamIds.includes(exam.id));
   const takenExams = exams.filter(exam => takenExamIds.includes(exam.id));

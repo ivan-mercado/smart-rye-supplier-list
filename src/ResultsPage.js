@@ -129,15 +129,15 @@ export default function ResultsPage({ user }) {
           background: #fff;
           color: #1976d2;
           border-radius: 50%;
-          width: 110px;
-          height: 110px;
+          width: 90px;
+          height: 90px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 900;
           font-size: 32px;
           box-shadow: 0 2px 8px #b0bec5;
-          border: 6px solid #1976d2;
+          border: 10px solid #1976d2;
           z-index: 2;
         }
         @media (max-width: 600px) {
