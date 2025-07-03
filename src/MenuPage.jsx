@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 
-
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,21 +14,21 @@ export default function MenuPage({ user }) {
           { label: "Suppliers", to: "/list", icon: "📦" },
           { label: "Exam", to: "/exams", icon: "📝" },
           { label: "Results", to: "/results", icon: "📊" },
-          { label: "Resumes", to: "/resumes", icon: "📄" }, // Admin: view all resumes
+          { label: "Resumes", to: "/resumes", icon: "📄" },
         ]
       : [
           { label: "Exam", to: "/exams", icon: "📝" },
-          { label: "Upload Resume", to: "/upload-resume", icon: "📤" }, // User: upload resume
+          { label: "Upload Resume", to: "/upload-resume", icon: "📤" },
         ];
 
   // For bottom nav, only show up to 3 main actions
   const bottomNavItems = user?.role === "admin"
-  ? [
-      menuItems[2], // Exam
-      menuItems[3], // Results
-      menuItems[4], // Resumes
-    ]
-  : menuItems.slice(0, 3);
+    ? [
+        menuItems[2], // Exam
+        menuItems[3], // Results
+        menuItems[4], // Resumes
+      ]
+    : menuItems.slice(0, 3);
 
   const handleLogout = async () => {
     await signOut(getAuth());
@@ -70,6 +69,35 @@ export default function MenuPage({ user }) {
           text-shadow: 0 2px 8px #b0bec5;
           flex: 1;
           text-align: center;
+        }
+        .menu-sidebar-email {
+          color: #1976d2;
+          font-weight: 600;
+          font-size: 1rem;
+          opacity: 0.95;
+          letter-spacing: 0.5px;
+          margin-bottom: 10px;
+          word-break: break-all;
+          text-align: center;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .menu-bottom-nav-email {
+          color: #1976d2;
+          font-weight: 600;
+          font-size: 0.98rem;
+          opacity: 0.95;
+          letter-spacing: 0.5px;
+          width: 100vw;
+          text-align: center;
+          padding: 4px 0 0 0;
+          background: none;
+          word-break: break-all;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .menu-logout-btn {
           position: absolute;
@@ -147,10 +175,17 @@ export default function MenuPage({ user }) {
           background: rgba(255,255,255,0.98);
           box-shadow: 0 -2px 12px #b0bec533;
           display: flex;
+          flex-direction: column;
+          align-items: center;
+          height: auto;
+          z-index: 20;
+        }
+        .menu-bottom-nav-links {
+          width: 100vw;
+          display: flex;
           justify-content: space-around;
           align-items: center;
           height: 56px;
-          z-index: 20;
         }
         .menu-bottom-nav-link {
           flex: 1;
@@ -234,110 +269,101 @@ export default function MenuPage({ user }) {
       </style>
             {/* Top App Bar */}
       <div className="menu-appbar">
-  {/* Email on the left */}
-  <div
-    style={{
-      position: "absolute",
-      left: 24,
-      top: 0,
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      color: "#1976d2",
-      fontWeight: 600,
-      fontSize: "1rem",
-      opacity: 0.95,
-      letterSpacing: "0.5px",
-      maxWidth: "40vw",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    }}
-    title={user?.email}
-  >
-    {user?.email}
-  </div>
-  {/* Title centered */}
-  <div className="menu-appbar-title">Smart Rye Automatics</div>
-</div>
+        <div className="menu-appbar-title">Smart Rye Automatics</div>
+      </div>
 
       {/* Sidebar for desktop */}
       <div className="menu-sidebar">
-  {menuItems.map((item, idx) => (
-    <Link
-      key={item.label + idx}
-      to={item.to}
-      className={
-        "menu-sidebar-link" +
-        (location.pathname === item.to ? " active" : "")
-      }
-    >
-      <span style={{ fontSize: 20 }}>{item.icon}</span>
-      {item.label}
-    </Link>
-  ))}
-  {/* Spacer for separation */}
-  <div style={{ flexGrow: 1 }} />
-  {/* Logout Button */}
-  <button
-    className="menu-sidebar-link"
-    style={{
-      color: "#b71c1c",
-      fontWeight: 700,
-      background: "rgba(255,255,255,0.85)",
-      border: "none",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      width: "140px",
-      justifyContent: "flex-start",
-      marginBottom: "56px", // <-- Add bottom margin
-      marginTop: "12px",    // <-- Add top margin for separation
-    }}
-    onClick={handleLogout}
-  >
-    <span style={{ fontSize: 20 }}>🚪</span>
-    Logout
-  </button>
-</div>
-
-      {/* Main Centered Content */}
-      <div style={{ textAlign: 'center', padding: 24 }}>
-  <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
-    🚧 Website Under Development
-  </div>
-  <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
-    This site is currently a work in progress.<br />
-    Features and content are being added by the developer.
-  </div>
-  <div style={{ fontSize: 15, color: '#888' }}>
-    Thank you for your patience!
-  </div>
-</div>
-            {/* Bottom Navigation for Mobile */}
-      <nav className="menu-bottom-nav">
-        {bottomNavItems.map((item, idx) => (
+        {menuItems.map((item, idx) => (
           <Link
             key={item.label + idx}
             to={item.to}
             className={
-              "menu-bottom-nav-link" +
+              "menu-sidebar-link" +
               (location.pathname === item.to ? " active" : "")
             }
           >
-            <span>{item.icon}</span>
-            <div style={{ fontSize: "0.8rem", marginTop: 1 }}>{item.label}</div>
+            <span style={{ fontSize: 20 }}>{item.icon}</span>
+            {item.label}
           </Link>
         ))}
+        {/* Spacer for separation */}
+        <div style={{ flexGrow: 1 }} />
+        {/* Email above logout */}
+        {user?.email && (
+          <div className="menu-sidebar-email" title={user.email}>
+            
+            {user.email}
+          </div>
+        )}
+        {/* Logout Button */}
         <button
-          className="menu-bottom-nav-link menu-bottom-nav-logout"
+          className="menu-sidebar-link"
+          style={{
+            color: "#b71c1c",
+            fontWeight: 700,
+            background: "rgba(255,255,255,0.85)",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            width: "140px",
+            justifyContent: "flex-start",
+            marginBottom: "56px",
+            marginTop: "8px",
+          }}
           onClick={handleLogout}
-          title="Logout"
         >
-          <span>🚪</span>
-          <div style={{ fontSize: "0.8rem", marginTop: 1 }}>Logout</div>
+          <span style={{ fontSize: 20 }}>🚪</span>
+          Logout
         </button>
+      </div>
+            {/* Main Centered Content */}
+      <div style={{ textAlign: 'center', padding: 24 }}>
+        <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
+          🚧 Website Under Development
+        </div>
+        <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
+          This site is currently a work in progress.<br />
+          Features and content are being added by the developer.
+        </div>
+        <div style={{ fontSize: 15, color: '#888' }}>
+          Thank you for your patience!
+        </div>
+      </div>
+      {/* Bottom Navigation for Mobile */}
+      <nav className="menu-bottom-nav">
+        {/* Email above logout in mobile nav */}
+        {user?.email && (
+          <div className="menu-bottom-nav-email" title={user.email}>
+            <span style={{ marginRight: 6, fontSize: 18 }}>👤</span>
+            {user.email}
+          </div>
+        )}
+        <div className="menu-bottom-nav-links">
+          {bottomNavItems.map((item, idx) => (
+            <Link
+              key={item.label + idx}
+              to={item.to}
+              className={
+                "menu-bottom-nav-link" +
+                (location.pathname === item.to ? " active" : "")
+              }
+            >
+              <span>{item.icon}</span>
+              <div style={{ fontSize: "0.8rem", marginTop: 1 }}>{item.label}</div>
+            </Link>
+          ))}
+          <button
+            className="menu-bottom-nav-link menu-bottom-nav-logout"
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <span>🚪</span>
+            <div style={{ fontSize: "0.8rem", marginTop: 1 }}>Logout</div>
+          </button>
+        </div>
       </nav>
     </div>
   );
