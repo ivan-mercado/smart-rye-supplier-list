@@ -3,6 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from './firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
+// Unselectable text CSS
+const noSelectStyle = `
+  .no-select, .no-select * {
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+  }
+`;
+
 const likertLabels = [
   "Strongly Disagree",
   "Disagree",
@@ -27,6 +37,14 @@ export default function TakeExamPage({ user }) {
   // Responsive helper
   const isMobile = window.innerWidth < 700;
 
+  // Inject the unselectable CSS
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = noSelectStyle;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
+
   useEffect(() => {
     const fetchExam = async () => {
       const examRef = doc(db, 'exams', examId);
@@ -40,17 +58,19 @@ export default function TakeExamPage({ user }) {
     };
     fetchExam();
   }, [examId, navigate]);
-
-  if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
+    if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f5f7fa',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: isMobile ? 0 : undefined,
-    }}>
+    <div
+      className="no-select"
+      style={{
+        minHeight: '100vh',
+        background: '#f5f7fa',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: isMobile ? 0 : undefined,
+      }}
+    >
       {!nameEntered ? (
         <div style={{ textAlign: 'center', marginTop: 80 }}>
           <h2>Please enter your full name to begin the exam</h2>
@@ -89,7 +109,7 @@ export default function TakeExamPage({ user }) {
         </div>
       ) : (
         <>
-                  {/* Top Bar */}
+          {/* Top Bar */}
           <div style={{
             background: '#1976d2',
             color: '#fff',
@@ -169,7 +189,7 @@ export default function TakeExamPage({ user }) {
                 ))}
               </div>
             </div>
-            {/* Main: Question and Options */}
+                        {/* Main: Question and Options */}
             <div style={{
               flex: 1,
               padding: isMobile ? '18px 8px' : '32px 36px',
@@ -321,7 +341,7 @@ export default function TakeExamPage({ user }) {
                   </div>
                 )}
               </form>
-                            {/* Custom Confirmation Modal */}
+              {/* Custom Confirmation Modal */}
               {showConfirm && (
                 <div
                   style={{

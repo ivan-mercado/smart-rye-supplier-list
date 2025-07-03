@@ -426,15 +426,17 @@ export default function ExamsPage({ user }) {
             <div className="exams-admin-send-modal">
               <h3 style={{ marginBottom: 18 }}>Send Exam to User</h3>
               <select
-                value={sendToUser}
-                onChange={e => setSendToUser(e.target.value)}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
-              >
-                <option value="">Select user...</option>
-                {allUsers.map(u => (
-                  <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
-                ))}
-              </select>
+  value={sendToUser}
+  onChange={e => setSendToUser(e.target.value)}
+  style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
+>
+  <option value="">Select user...</option>
+  {allUsers
+    .filter(u => u.role === "user" && !((exams.find(e => e.id === sendExamId)?.assignedTo || []).includes(u.uid)))
+    .map(u => (
+      <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
+  ))}
+</select>
               <div style={{ display: 'flex', gap: 12 }}>
                 <button
                   disabled={!sendToUser}
