@@ -234,6 +234,30 @@ export default function MenuPage({ user }) {
       </style>
             {/* Top App Bar */}
       <div className="menu-appbar">
+  {/* Email on the left */}
+  <div
+    style={{
+      position: "absolute",
+      left: 24,
+      top: 0,
+      height: "100%",
+      display: "flex",
+      alignItems: "center",
+      color: "#1976d2",
+      fontWeight: 600,
+      fontSize: "1rem",
+      opacity: 0.95,
+      letterSpacing: "0.5px",
+      maxWidth: "40vw",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }}
+    title={user?.email}
+  >
+    {user?.email}
+  </div>
+  {/* Title centered */}
   <div className="menu-appbar-title">Smart Rye Automatics</div>
 </div>
 

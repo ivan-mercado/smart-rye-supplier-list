@@ -34,6 +34,9 @@ export default function TakeExamPage({ user }) {
   const [fullName, setFullName] = useState('');
   const [nameEntered, setNameEntered] = useState(false);
 
+  // For offline detection
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   // Responsive helper
   const isMobile = window.innerWidth < 700;
 
@@ -44,20 +47,52 @@ export default function TakeExamPage({ user }) {
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };
   }, []);
-
+    // Fetch exam and restore answers if available
   useEffect(() => {
     const fetchExam = async () => {
       const examRef = doc(db, 'exams', examId);
       const examSnap = await getDoc(examRef);
       if (examSnap.exists()) {
         setExam({ id: examSnap.id, ...examSnap.data() });
-        setAnswers(Array(examSnap.data().questions.length).fill(''));
+        // Try to restore answers from localStorage
+        const saved = localStorage.getItem(`exam-${examId}-answers`);
+        if (saved) {
+          setAnswers(JSON.parse(saved));
+        } else {
+          setAnswers(Array(examSnap.data().questions.length).fill(''));
+        }
       } else {
         navigate('/exams');
       }
     };
     fetchExam();
   }, [examId, navigate]);
+
+  // Auto-save answers to localStorage on every change
+  useEffect(() => {
+    if (answers.length > 0) {
+      localStorage.setItem(`exam-${examId}-answers`, JSON.stringify(answers));
+    }
+  }, [answers, examId]);
+
+  // Remove saved answers on successful submit
+  useEffect(() => {
+    if (submitted) {
+      localStorage.removeItem(`exam-${examId}-answers`);
+    }
+  }, [submitted, examId]);
+
+  // Detect offline/online
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
     if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
   return (
     <div
@@ -71,6 +106,11 @@ export default function TakeExamPage({ user }) {
         padding: isMobile ? 0 : undefined,
       }}
     >
+      {!isOnline && (
+        <div style={{color: 'red', fontWeight: 700, marginTop: 16, marginBottom: 10}}>
+          You are offline! Your answers are being saved locally. Please reconnect before submitting.
+        </div>
+      )}
       {!nameEntered ? (
         <div style={{ textAlign: 'center', marginTop: 80 }}>
           <h2>Please enter your full name to begin the exam</h2>
@@ -189,7 +229,7 @@ export default function TakeExamPage({ user }) {
                 ))}
               </div>
             </div>
-                        {/* Main: Question and Options */}
+            {/* Main: Question and Options */}
             <div style={{
               flex: 1,
               padding: isMobile ? '18px 8px' : '32px 36px',
@@ -319,7 +359,7 @@ export default function TakeExamPage({ user }) {
                 {!submitted ? (
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !isOnline}
                     style={{
                       background: '#43a047',
                       color: '#fff',
@@ -328,7 +368,7 @@ export default function TakeExamPage({ user }) {
                       padding: isMobile ? '14px 0' : '14px 32px',
                       fontWeight: 700,
                       fontSize: isMobile ? 17 : 19,
-                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      cursor: (submitting || !isOnline) ? 'not-allowed' : 'pointer',
                       marginTop: 10,
                       minWidth: isMobile ? '100%' : 180
                     }}
@@ -420,6 +460,7 @@ export default function TakeExamPage({ user }) {
                           fontSize: 16,
                           cursor: 'pointer'
                         }}
+                        disabled={!isOnline}
                       >
                         Finish Exam
                       </button>
