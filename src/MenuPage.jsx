@@ -337,7 +337,7 @@ export default function MenuPage({ user }) {
         {/* Email above logout in mobile nav */}
         {user?.email && (
           <div className="menu-bottom-nav-email" title={user.email}>
-            <span style={{ marginRight: 6, fontSize: 18 }}>👤</span>
+            
             {user.email}
           </div>
         )}
