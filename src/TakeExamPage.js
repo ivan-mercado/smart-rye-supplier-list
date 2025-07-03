@@ -118,7 +118,7 @@ export default function TakeExamPage({ user }) {
             type="text"
             value={fullName}
             onChange={e => setFullName(e.target.value)}
-            placeholder="Full Name"
+            placeholder="Full Name (LN, FN, MN)"
             style={{
               padding: 12,
               fontSize: 18,
