@@ -181,12 +181,65 @@ export default function ExamsPage({ user }) {
           .exams-admin-exam-item input[type="checkbox"] {
             margin-right: 12px;
           }
+          /* Modal Styling */
           .exams-admin-send-modal {
             background: #fff;
-            border-radius: 12px;
-            padding: 32px;
+            border-radius: 16px;
+            padding: 36px 32px 28px 32px;
             min-width: 320px;
-            box-shadow: 0 4px 24px #e3e3e3;
+            max-width: 95vw;
+            text-align: center;
+            box-shadow: 0 8px 32px #cfd8dc;
+          }
+          .send-modal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #22223b;
+            margin-bottom: 18px;
+          }
+          .send-modal-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #b0bec5;
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+            background: #f5f7fa;
+            transition: border 0.18s;
+          }
+          .send-modal-select:focus {
+            border: 2px solid #1976d2;
+            outline: none;
+          }
+          .send-modal-btn {
+            min-width: 100px;
+            padding: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-right: 12px;
+            margin-top: 10px;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #e3e3e3;
+          }
+          .send-modal-btn.send {
+            background: #1976d2;
+            color: #fff;
+          }
+          .send-modal-btn.send:hover:enabled {
+            background: #1256a3;
+            transform: scale(1.04);
+          }
+          .send-modal-btn.cancel {
+            background: #b0bec5;
+            color: #fff;
+          }
+          .send-modal-btn.cancel:hover:enabled {
+            background: #90a4ae;
+            color: #fff;
+            transform: scale(1.04);
           }
           @media (max-width: 700px) {
             .exams-admin-root {
@@ -434,11 +487,11 @@ export default function ExamsPage({ user }) {
             background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
             <div className="exams-admin-send-modal">
-              <h3 style={{ marginBottom: 18 }}>Send Exam to User</h3>
+              <div className="send-modal-title">Send Exam to User</div>
               <select
+                className="send-modal-select"
                 value={sendToUser}
                 onChange={e => setSendToUser(e.target.value)}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
               >
                 <option value="">Select user...</option>
                 {allUsers
@@ -447,11 +500,10 @@ export default function ExamsPage({ user }) {
                     <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
                 ))}
               </select>
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
                 <button
                   disabled={!sendToUser}
-                  className="exams-admin-btn"
-                  style={{ background: '#1976d2', color: '#fff' }}
+                  className="send-modal-btn send"
                   onClick={async () => {
                     if (!sendToUser) return;
                     const examRef = doc(db, 'exams', sendExamId);
@@ -466,7 +518,7 @@ export default function ExamsPage({ user }) {
                   Send
                 </button>
                 <button
-                  className="exams-admin-btn gray"
+                  className="send-modal-btn cancel"
                   onClick={() => {
                     setShowSendModal(false);
                     setSendToUser('');
@@ -486,11 +538,11 @@ export default function ExamsPage({ user }) {
             background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
             <div className="exams-admin-send-modal">
-              <h3 style={{ marginBottom: 18 }}>Send Selected Exams to User</h3>
+              <div className="send-modal-title">Send Selected Exams to User</div>
               <select
+                className="send-modal-select"
                 value={sendToUser}
                 onChange={e => setSendToUser(e.target.value)}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: 16, marginBottom: 18 }}
               >
                 <option value="">Select user...</option>
                 {allUsers
@@ -499,11 +551,10 @@ export default function ExamsPage({ user }) {
                     <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
                 ))}
               </select>
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
                 <button
                   disabled={!sendToUser}
-                  className="exams-admin-btn"
-                  style={{ background: '#1976d2', color: '#fff' }}
+                  className="send-modal-btn send"
                   onClick={async () => {
                     if (!sendToUser) return;
                     for (const examId of selectedExams) {
@@ -519,7 +570,7 @@ export default function ExamsPage({ user }) {
                   Send
                 </button>
                 <button
-                  className="exams-admin-btn gray"
+                  className="send-modal-btn cancel"
                   onClick={() => {
                     setShowMultiSendModal(false);
                     setSendToUser('');
