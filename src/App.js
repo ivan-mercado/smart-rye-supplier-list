@@ -281,30 +281,30 @@ function AuthForm({ onAuth }) {
       <style>
         {`
         @media (max-width: 600px) {
-          .auth-form-container {
-            min-width: 0 !important;
-            max-width: 98vw !important;
-            width: 98vw !important;
-            padding: 22px 6vw 18px 6vw !important;
-            border-radius: 12px !important;
-          }
-          .auth-form-title {
-            font-size: 20px !important;
-          }
-          .auth-form-h2 {
-            font-size: 20px !important;
-          }
-          .auth-form-input {
-            font-size: 15px !important;
-            padding: 12px 10px 12px 38px !important;
-            border-radius: 8px !important;
-          }
-          .auth-form-btn {
-            font-size: 15px !important;
-            padding: 10px 0 !important;
-            border-radius: 8px !important;
-          }
-        }
+  .auth-form-container {
+    min-width: 0 !important;
+    max-width: 95vw !important;
+    width: 95vw !important;
+    padding: 18px 4vw 18px 4vw !important;
+    border-radius: 14px !important;
+  }
+  .auth-form-title {
+    font-size: 20px !important;
+  }
+  .auth-form-h2 {
+    font-size: 20px !important;
+  }
+  .auth-form-input {
+    font-size: 15px !important;
+    padding: 12px 10px 12px 38px !important;
+    border-radius: 8px !important;
+  }
+  .auth-form-btn {
+    font-size: 15px !important;
+    padding: 10px 0 !important;
+    border-radius: 8px !important;
+  }
+}
         `}
       </style>
       {/* Video Background */}
