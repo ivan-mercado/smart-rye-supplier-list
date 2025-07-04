@@ -283,28 +283,28 @@ function AuthForm({ onAuth }) {
         @media (max-width: 600px) {
   .auth-form-container {
     min-width: 0 !important;
-    max-width: 95vw !important;
-    width: 95vw !important;
-    padding: 18px 4vw 18px 4vw !important;
+    max-width: 85vw !important;
+    width: 85vw !important;
+    padding: 18px 2vw 18px 2vw !important;
     border-radius: 14px !important;
   }
-  .auth-form-title {
-    font-size: 20px !important;
-  }
-  .auth-form-h2 {
-    font-size: 20px !important;
-  }
-  .auth-form-input {
-    font-size: 15px !important;
-    padding: 12px 10px 12px 38px !important;
-    border-radius: 8px !important;
-  }
-  .auth-form-btn {
-    font-size: 15px !important;
-    padding: 10px 0 !important;
-    border-radius: 8px !important;
-  }
-}
+          .auth-form-title {
+            font-size: 20px !important;
+          }
+          .auth-form-h2 {
+            font-size: 20px !important;
+          }
+          .auth-form-input {
+            font-size: 15px !important;
+            padding: 12px 10px 12px 38px !important;
+            border-radius: 8px !important;
+          }
+          .auth-form-btn {
+            font-size: 15px !important;
+            padding: 10px 0 !important;
+            border-radius: 8px !important;
+          }
+        }
         `}
       </style>
       {/* Video Background */}
@@ -349,7 +349,7 @@ function AuthForm({ onAuth }) {
           position: "relative",
           zIndex: 2,
           background: "rgba(255,255,255,0.7)",
-          backdropFilter: "blur(12px)",
+          backdropFilter: "blur(10px)",
           border: "1.5px solid #e3e8f7",
           boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.12)",
           borderRadius: 20,
