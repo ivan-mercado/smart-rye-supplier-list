@@ -319,27 +319,46 @@ export default function TakeExamPage({ user }) {
                 </div>
               )}
               <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (currentQ < exam.questions.length - 1) setCurrentQ(currentQ + 1);
-                  }}
-                  style={{
-                    background: '#1976d2',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: isMobile ? '10px 0' : '10px 18px',
-                    width: isMobile ? '100%' : undefined,
-                    fontWeight: 700,
-                    fontSize: isMobile ? 16 : 16,
-                    cursor: 'pointer'
-                  }}
-                  disabled={submitting || submitted || currentQ === exam.questions.length - 1}
-                >
-                  Save & Next
-                </button>
-              </div>
+  <button
+    type="button"
+    onClick={() => setCurrentQ(currentQ - 1)}
+    disabled={currentQ === 0}
+    style={{
+      background: '#fff',
+      color: '#1976d2',
+      border: '2px solid #1976d2',
+      borderRadius: 8,
+      padding: isMobile ? '10px 0' : '10px 18px',
+      width: isMobile ? '100%' : undefined,
+      fontWeight: 700,
+      fontSize: isMobile ? 16 : 16,
+      cursor: currentQ === 0 ? 'not-allowed' : 'pointer',
+      opacity: currentQ === 0 ? 0.6 : 1,
+    }}
+  >
+    Back
+  </button>
+  <button
+    type="button"
+    onClick={() => {
+      if (currentQ < exam.questions.length - 1) setCurrentQ(currentQ + 1);
+    }}
+    disabled={submitting || submitted || currentQ === exam.questions.length - 1}
+    style={{
+      background: '#1976d2',
+      color: '#fff',
+      border: 'none',
+      borderRadius: 8,
+      padding: isMobile ? '10px 0' : '10px 18px',
+      width: isMobile ? '100%' : undefined,
+      fontWeight: 700,
+      fontSize: isMobile ? 16 : 16,
+      cursor: 'pointer'
+    }}
+  >
+    Save & Next
+  </button>
+</div>
                             {/* Finish Exam Button - lower right */}
               <form
                 onSubmit={e => {
