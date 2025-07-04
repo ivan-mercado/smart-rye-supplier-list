@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from './firebase';
-import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-// Unselectable text CSS
 const noSelectStyle = `
   .no-select, .no-select * {
     user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none;    /* Firefox */
-    -ms-user-select: none;     /* IE10+/Edge */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 `;
 
@@ -34,28 +33,24 @@ export default function TakeExamPage({ user }) {
   const [fullName, setFullName] = useState('');
   const [nameEntered, setNameEntered] = useState(false);
 
-  // For offline detection
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  // Responsive helper
   const isMobile = window.innerWidth < 700;
+  const localKey = `exam-${user.uid}-${examId}-answers`;
 
-  // Inject the unselectable CSS
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = noSelectStyle;
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };
   }, []);
-    // Fetch exam and restore answers if available
+
   useEffect(() => {
     const fetchExam = async () => {
       const examRef = doc(db, 'exams', examId);
       const examSnap = await getDoc(examRef);
       if (examSnap.exists()) {
         setExam({ id: examSnap.id, ...examSnap.data() });
-        // Try to restore answers from localStorage
-        const saved = localStorage.getItem(`exam-${examId}-answers`);
+        const saved = localStorage.getItem(localKey);
         if (saved) {
           setAnswers(JSON.parse(saved));
         } else {
@@ -66,23 +61,20 @@ export default function TakeExamPage({ user }) {
       }
     };
     fetchExam();
-  }, [examId, navigate]);
+  }, [examId, navigate, localKey]);
 
-  // Auto-save answers to localStorage on every change
   useEffect(() => {
     if (answers.length > 0) {
-      localStorage.setItem(`exam-${examId}-answers`, JSON.stringify(answers));
+      localStorage.setItem(localKey, JSON.stringify(answers));
     }
-  }, [answers, examId]);
+  }, [answers, localKey]);
 
-  // Remove saved answers on successful submit
   useEffect(() => {
     if (submitted) {
-      localStorage.removeItem(`exam-${examId}-answers`);
+      localStorage.removeItem(localKey);
     }
-  }, [submitted, examId]);
+  }, [submitted, localKey]);
 
-  // Detect offline/online
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -93,8 +85,9 @@ export default function TakeExamPage({ user }) {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-    if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
-  return (
+
+  if (!exam) return <div style={{ textAlign: 'center', marginTop: 80 }}>Loading exam...</div>;
+    return (
     <div
       className="no-select"
       style={{
@@ -342,7 +335,7 @@ export default function TakeExamPage({ user }) {
                   Save & Next
                 </button>
               </div>
-              {/* Finish Exam Button - lower right */}
+                            {/* Finish Exam Button - lower right */}
               <form
                 onSubmit={e => {
                   e.preventDefault();
@@ -439,7 +432,8 @@ export default function TakeExamPage({ user }) {
                         onClick={async () => {
                           setShowConfirm(false);
                           setSubmitting(true);
-                          await addDoc(collection(db, 'results'), {
+                          // Use setDoc with a unique ID per user/exam
+                          await setDoc(doc(db, 'results', `${user.uid}_${exam.id}`), {
                             examId: exam.id,
                             userId: user.uid,
                             userName: fullName,

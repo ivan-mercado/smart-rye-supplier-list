@@ -14,11 +14,11 @@ export default function MenuPage({ user }) {
           { label: "Suppliers", to: "/list", icon: "📦" },
           { label: "Exam", to: "/exams", icon: "📝" },
           { label: "Results", to: "/results", icon: "📊" },
-          { label: "Resumes", to: "/resumes", icon: "📄" },
+          // { label: "Resumes", to: "/resumes", icon: "📄" },
         ]
       : [
           { label: "Exam", to: "/exams", icon: "📝" },
-          { label: "Upload Resume", to: "/upload-resume", icon: "📤" },
+          // { label: "Upload Resume", to: "/upload-resume", icon: "📤" },
         ];
 
   // For bottom nav, only show up to 3 main actions
@@ -26,7 +26,7 @@ export default function MenuPage({ user }) {
     ? [
         menuItems[2], // Exam
         menuItems[3], // Results
-        menuItems[4], // Resumes
+        // menuItems[4], // Resumes
       ]
     : menuItems.slice(0, 3);
 
