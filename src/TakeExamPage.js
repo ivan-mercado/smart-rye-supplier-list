@@ -180,9 +180,11 @@ export default function TakeExamPage({ user }) {
               display: 'flex',
               flexDirection: isMobile ? 'row' : 'column',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: isMobile ? 'flex-start' : 'center',
               overflowX: isMobile ? 'auto' : 'visible',
-              gap: 8
+              gap: 8,
+              whiteSpace: isMobile ? 'nowrap' : 'normal',
+              scrollBehavior: isMobile ? 'smooth' : undefined,
             }}>
               <div style={{
                 fontWeight: 700,
@@ -213,7 +215,10 @@ export default function TakeExamPage({ user }) {
                       fontSize: 17,
                       cursor: 'pointer',
                       outline: 'none',
-                      transition: 'all 0.2s'
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                     title={answers[idx] ? 'Answered' : 'Not Answered'}
                   >
