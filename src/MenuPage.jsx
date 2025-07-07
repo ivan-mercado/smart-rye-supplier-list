@@ -28,6 +28,7 @@ export default function MenuPage({ user }) {
     ? [
         menuItems[2], // Exam
         menuItems[3], // Results
+        menuItems[4], // Attendance
         // menuItems[4], // Resumes
       ]
     : menuItems.slice(0, 3);

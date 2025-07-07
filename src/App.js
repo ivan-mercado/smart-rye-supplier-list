@@ -8,6 +8,7 @@ import UploadResumePage from './UploadResumePage';
 import ResumesPage from './ResumesPage';
 import UserAttendancePage from './UserAttendancePage';
 import AdminAttendanceDashboard from './AdminAttendanceDashboard';
+import OJTAttendancePage from './OJTAttendancePage';
 import DepartmentSelectModal from './DepartmentSelectModal';
 import ResultsPage from './ResultsPage';
 import ExamsPage from './ExamsPage';
@@ -1056,6 +1057,7 @@ function App() {
       minHeight: '90vh'
     }}>
       <Routes>
+        <Route path="/ojt-attendance" element={<OJTAttendancePage />} />
         <Route path="/attendance" element={
           user?.role === "admin"
             ? <AdminAttendanceDashboard user={user} />
