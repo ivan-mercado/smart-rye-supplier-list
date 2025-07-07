@@ -6,6 +6,9 @@ import MenuPage from './MenuPage';
 import TakeExamPage from './TakeExamPage';
 import UploadResumePage from './UploadResumePage';
 import ResumesPage from './ResumesPage';
+import UserAttendancePage from './UserAttendancePage';
+import AdminAttendanceDashboard from './AdminAttendanceDashboard';
+import DepartmentSelectModal from './DepartmentSelectModal';
 import ResultsPage from './ResultsPage';
 import ExamsPage from './ExamsPage';
 import {
@@ -258,7 +261,7 @@ function AuthForm({ onAuth }) {
       }
       const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
       const userData = userDoc.data();
-      onAuth({ ...userCredential.user, role: userData.role });
+      onAuth({ ...userCredential.user, ...userData });
     } catch (err) {
       setError(err.message.replace("Firebase: ", ""));
     }
@@ -939,6 +942,8 @@ const successButtonStyle = {
 
 // --- Main App ---
 function App() {
+  const [user, setUser] = useState(null);
+  const [showDeptModal, setShowDeptModal] = useState(false);
   const [suppliers, setSuppliers] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -951,7 +956,6 @@ function App() {
   const [expandedRows, setExpandedRows] = useState([]);
 
   // --- USER/ROLE LOADING LOGIC ---
-  const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
@@ -984,6 +988,17 @@ function App() {
     return () => unsub();
   }, [user]);
 
+
+  useEffect(() => {
+  console.log("User state changed:", user);
+  if (user && !user.department) {
+    setShowDeptModal(true);
+  } else {
+    setShowDeptModal(false);
+  }
+}, [user]);
+
+
   if (loadingUser) {
     return (
       <div style={{
@@ -1004,6 +1019,8 @@ function App() {
     return <AuthForm onAuth={setUser} />;
   }
 
+  
+
   const handleAddSupplier = async (supplier) => {
     if (!user) return;
     await addDoc(collection(db, 'suppliers'), { ...supplier, userId: user.uid });
@@ -1019,6 +1036,16 @@ function App() {
     }
   };
     return (
+  <>
+    {showDeptModal && (
+      <DepartmentSelectModal
+        onSelect={async (department) => {
+          await updateDoc(doc(db, "users", user.uid), { department });
+          setUser(prev => ({ ...prev, department }));
+          setShowDeptModal(false);
+        }}
+      />
+    )}
     <div style={{
       maxWidth: 1300,
       margin: '40px auto',
@@ -1029,7 +1056,13 @@ function App() {
       minHeight: '90vh'
     }}>
       <Routes>
+        <Route path="/attendance" element={
+          user?.role === "admin"
+            ? <AdminAttendanceDashboard user={user} />
+            : <UserAttendancePage user={user} />
+        } />
         <Route path="/" element={<MenuPage user={user} />} />
+        <Route path="/attendance" element={<UserAttendancePage user={user} />} />
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
         <Route path="/results" element={<ResultsPage user={user} />} />
         <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />
@@ -1055,7 +1088,8 @@ function App() {
         <Route path="*" element={<AddSupplier onAdd={handleAddSupplier} />} />
       </Routes>
     </div>
-  );
+  </>
+);
 }
 
 export default function AppWithRouter() {

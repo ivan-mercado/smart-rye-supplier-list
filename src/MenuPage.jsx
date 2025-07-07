@@ -14,10 +14,12 @@ export default function MenuPage({ user }) {
           { label: "Suppliers", to: "/list", icon: "📦" },
           { label: "Exam", to: "/exams", icon: "📝" },
           { label: "Results", to: "/results", icon: "📊" },
+          { label: "Attendance", to: "/attendance", icon: "⏰" },
           // { label: "Resumes", to: "/resumes", icon: "📄" },
         ]
       : [
           { label: "Exam", to: "/exams", icon: "📝" },
+          { label: "Attendance", to: "/attendance", icon: "⏰" },
           // { label: "Upload Resume", to: "/upload-resume", icon: "📤" },
         ];
 
@@ -289,6 +291,17 @@ export default function MenuPage({ user }) {
         ))}
         {/* Spacer for separation */}
         <div style={{ flexGrow: 1 }} />
+        {user?.department && (
+  <div className="menu-sidebar-department" style={{
+    color: "#1976d2",
+    fontWeight: 700,
+    fontSize: "1.05rem",
+    marginBottom: 2,
+    textAlign: "center"
+  }}>
+    {user.department}
+  </div>
+)}
         {/* Email above logout */}
         {user?.email && (
           <div className="menu-sidebar-email" title={user.email}>
