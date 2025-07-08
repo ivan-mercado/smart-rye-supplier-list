@@ -506,15 +506,31 @@ export default function ExamsPage({ user }) {
                   disabled={!sendToUser}
                   className="send-modal-btn send"
                   onClick={async () => {
-                    if (!sendToUser) return;
-                    const examRef = doc(db, 'exams', sendExamId);
-                    await updateDoc(examRef, {
-                      assignedTo: arrayUnion(sendToUser)
-                    });
-                    setShowSendModal(false);
-                    setSendToUser('');
-                    setSendExamId(null);
-                  }}
+  if (!sendToUser) return;
+  try {
+    const examRef = doc(db, 'exams', sendExamId);
+    await updateDoc(examRef, {
+      assignedTo: arrayUnion(sendToUser)
+    });
+    console.log("Exam assigned to user:", sendToUser);
+
+    await addDoc(collection(db, "notifications"), {
+      toUserId: sendToUser,
+      type: "exam_assigned",
+      examId: sendExamId,
+      examTitle: exams.find(e => e.id === sendExamId)?.title || "",
+      timestamp: serverTimestamp(),
+      read: false,
+    });
+    console.log("Notification created for user:", sendToUser);
+  } catch (err) {
+    console.error("Error assigning exam or creating notification:", err);
+    alert("Failed to assign exam or create notification. See console for details.");
+  }
+  setShowSendModal(false);
+  setSendToUser('');
+  setSendExamId(null);
+}}
                 >
                   Send
                 </button>
