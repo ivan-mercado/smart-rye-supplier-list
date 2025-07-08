@@ -46,6 +46,7 @@ export default function MenuPage({ user }) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          padding-bottom: 80px;
         }
         .menu-appbar {
           width: 100vw;
@@ -164,13 +165,95 @@ export default function MenuPage({ user }) {
           align-items: center;
           justify-content: center;
         }
-        @media (min-width: 900px) {
-          .menu-bottom-nav {
-            display: none;
-          }
+                  .menu-bottom-nav {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100vw;
+          background: #fff;
+          box-shadow: 0 -2px 12px #b0bec533;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          z-index: 20;
+          padding: 0 0 4px 0;
+        }
+        .menu-bottom-nav-links {
+          display: flex;
+          width: 100vw;
+          justify-content: space-around;
+          align-items: center;
+          padding: 6px 0 0 0;
+        }
+        .menu-bottom-nav-link {
+          flex: 1;
+          text-align: center;
+          padding: 12px 0;
+          margin: 0 4px;
+          background: #f5f7fa;
+          color: #415256;
+          font-weight: 700;
+          font-size: 1.08rem;
+          border: none;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px #d7d7d7;
+          text-decoration: none;
+          cursor: pointer;
+          transition: background 0.18s, color 0.18s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .menu-bottom-nav-link.active,
+        .menu-bottom-nav-link:focus,
+        .menu-bottom-nav-link:hover {
+          background: #1588fc !important;
+          color: #fff !important;
+        }
+        .menu-bottom-nav-logout {
+          color: #e53935 !important;
+          background: #fff !important;
+          border: 2px solid #e53935;
+          font-weight: 800;
+        }
+        .menu-bottom-nav-logout:focus,
+        .menu-bottom-nav-logout:hover {
+          background: #e53935 !important;
+          color: #fff !important;
         }
         @media (max-width: 899px) {
+          .menu-appbar-title {
+            font-size: 1.1rem;
+          }
+          .menu-modern-root {
+            padding-bottom: 80px;
+          }
           .menu-sidebar {
+            display: none;
+          }
+          .menu-bottom-nav {
+            display: flex;
+          }
+          .menu-bottom-nav-link {
+            font-size: 1rem;
+            padding: 12px 0;
+          }
+          .menu-bottom-nav-links {
+            gap: 0;
+          }
+          .menu-bottom-nav-email {
+            font-size: 0.95rem;
+            padding: 4px 0 0 0;
+          }
+          .menu-appbar {
+            height: 48px;
+          }
+          .menu-appbar-title {
+            font-size: 1.05rem;
+          }
+        }
+        @media (min-width: 900px) {
+          .menu-bottom-nav {
             display: none;
           }
         }
@@ -219,8 +302,14 @@ export default function MenuPage({ user }) {
           Logout
         </button>
       </div>
-      {/* Main Centered Content */}
-      <div style={{ textAlign: 'center', padding: 24 }}>
+            {/* Main Centered Content */}
+      <div
+        style={{
+          textAlign: 'center',
+          padding: window.innerWidth < 900 ? 16 : 24,
+          marginTop: window.innerWidth < 900 ? 60 : 0,
+        }}
+      >
         <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
           Website Under Development
         </div>
@@ -257,16 +346,6 @@ export default function MenuPage({ user }) {
             className="menu-bottom-nav-link menu-bottom-nav-logout"
             onClick={handleLogout}
             title="Logout"
-            style={{
-              color: "#e53935",
-              fontWeight: 700,
-              background: "#fff",
-              border: "none",
-              borderRadius: 12,
-              padding: "10px 0",
-              margin: "0 8px",
-              fontSize: "1rem"
-            }}
           >
             Logout
           </button>
