@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
+import NotificationsBar from "./NotificationsBar";
 
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
@@ -302,6 +303,7 @@ export default function MenuPage({ user }) {
           Logout
         </button>
       </div>
+      <NotificationsBar user={user} />
             {/* Main Centered Content */}
       <div
         style={{

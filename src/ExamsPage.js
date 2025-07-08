@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from './firebase';
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { serverTimestamp } from "firebase/firestore";
 
 export default function ExamsPage({ user }) {
   const [exams, setExams] = useState([]);
@@ -562,6 +563,14 @@ export default function ExamsPage({ user }) {
                       await updateDoc(examRef, {
                         assignedTo: arrayUnion(sendToUser)
                       });
+                      await addDoc(collection(db, "notifications"), {
+  toUserId: sendToUser,
+  type: "exam_assigned",
+  examId: examId,
+  examTitle: exams.find(e => e.id === examId)?.title || "",
+  timestamp: serverTimestamp(),
+  read: false,
+});
                     }
                     setShowMultiSendModal(false);
                     setSendToUser('');

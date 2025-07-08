@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from './firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc } from "firebase/firestore";
+import { getDocs, query, where } from "firebase/firestore";
 
 const noSelectStyle = `
   .no-select, .no-select * {
@@ -464,6 +466,23 @@ export default function TakeExamPage({ user }) {
                             answers,
                             submittedAt: serverTimestamp()
                           });
+                          const adminsSnapshot = await getDocs(query(collection(db, "users"), where("role", "==", "admin")));
+for (const adminDoc of adminsSnapshot.docs) {
+  try {
+    await addDoc(collection(db, "notifications"), {
+      toUserId: adminDoc.id,
+      type: "exam_submitted",
+      examId: exam.id,
+      examTitle: exam.title,
+      fromUserName: fullName,
+      timestamp: serverTimestamp(),
+      read: false,
+    });
+    console.log("Notification sent to admin:", adminDoc.id);
+  } catch (err) {
+    console.error("Failed to send notification to admin:", adminDoc.id, err);
+  }
+}
                           setSubmitting(false);
                           setSubmitted(true);
                           setTimeout(() => navigate('/exams'), 1200);
