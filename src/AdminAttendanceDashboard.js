@@ -311,22 +311,24 @@ export default function AdminAttendanceDashboard({ user }) {
                         <td style={tdStyle}>{a.department}</td>
                         <td style={{ ...tdStyle, textAlign: 'center' }}>{formatTo12Hour(a.timeIn)}</td>
                         <td style={{ ...tdStyle, textAlign: 'center' }}>{formatTo12Hour(a.timeOut)}</td>
-                        <td style={{ ...tdStyle, textAlign: 'center', padding: 0 }}>
-                          <span style={{
-                            display: 'inline-block',
-                            minWidth: 60,
-                            padding: '4px 18px',
-                            borderRadius: 16,
-                            background: a.status === "Late" ? "#ffecb3" : "#c8e6c9",
-                            color: a.status === "Late" ? "#ff9800" : "#43a047",
-                            fontWeight: 700,
-                            fontSize: 15,
-                            textAlign: 'center',
-                            boxShadow: a.status === "Late" ? "0 1px 4px #ffe0b2" : "0 1px 4px #c8e6c9"
-                          }}>
-                            {a.status}
-                          </span>
-                        </td>
+                        <td style={{ ...tdStyle, textAlign: 'center', verticalAlign: 'middle', padding: 0 }}>
+  <span style={{
+    display: 'inline-block',
+    minWidth: 60,
+    padding: '4px 18px',
+    borderRadius: 16,
+    background: a.status === "Late" ? "#ffecb3" : "#c8e6c9",
+    color: a.status === "Late" ? "#ff9800" : "#43a047",
+    fontWeight: 700,
+    fontSize: 15,
+    textAlign: 'center',
+    boxShadow: a.status === "Late" ? "0 1px 4px #ffe0b2" : "0 1px 4px #c8e6c9",
+    margin: 0, // ensure no margin
+    verticalAlign: 'middle'
+  }}>
+    {a.status}
+  </span>
+</td>
                       </tr>
                     ))
                   )}

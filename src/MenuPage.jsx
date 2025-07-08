@@ -336,7 +336,7 @@ export default function MenuPage({ user }) {
             {/* Main Centered Content */}
       <div style={{ textAlign: 'center', padding: 24 }}>
         <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
-          🚧 Website Under Development
+          Website Under Development
         </div>
         <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
           This site is currently a work in progress.<br />
