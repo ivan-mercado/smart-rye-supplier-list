@@ -76,6 +76,11 @@ export default function OJTAttendancePage() {
     setEditingValue("");
   };
 
+  // Handle back button click
+  const handleBackClick = () => {
+    window.history.back();
+  };
+
   const thStyle = {
     padding: 16,
     border: "none",
@@ -156,8 +161,50 @@ export default function OJTAttendancePage() {
             cursor: pointer;
             font-size: 13px;
           }
+          .back-button {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+          }
+          .back-button:hover {
+            background: #1565c0;
+          }
         `}
       </style>
+      
+      {/* Back Button */}
+      <button 
+        onClick={handleBackClick}
+        className="back-button"
+        style={{
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: "8px",
+          padding: "10px 16px",
+          fontWeight: 600,
+          cursor: "pointer",
+          fontSize: "14px",
+          marginBottom: "20px",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          transition: "background 0.2s"
+        }}
+      >
+        ← Back
+      </button>
+
       <h2 style={{ fontSize: 26, fontWeight: 900, color: "#1976d2", marginBottom: 18, letterSpacing: 1 }}>
         OJT Attendance Tracker
       </h2>
