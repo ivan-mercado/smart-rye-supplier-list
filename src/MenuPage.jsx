@@ -35,7 +35,7 @@ export default function MenuPage({ user }) {
         menuItems[4], // Attendance
         menuItems[5], // Announcement button
       ]
-    : menuItems.slice(0, 3);
+    : menuItems.slice(0, 4);
 
   const handleLogout = async () => {
     await signOut(getAuth());
