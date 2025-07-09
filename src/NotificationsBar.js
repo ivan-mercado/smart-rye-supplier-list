@@ -76,7 +76,7 @@ export default function NotificationsBar({ user }) {
         }
         .notif-bell {
           position: fixed;
-          bottom: 24px;
+          bottom: 90px;
           right: 24px;
           background: #1976d2;
           color: #fff;
