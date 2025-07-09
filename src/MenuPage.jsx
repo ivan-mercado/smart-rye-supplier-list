@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
+import AnnouncementModal from "./AnnouncementModal";
 import "./MenuPage.css"; // Import the CSS file for styling
 
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // State to control the Announcement modal
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
 
   // Menu items for both roles
   const menuItems =
@@ -36,8 +40,7 @@ export default function MenuPage({ user }) {
     await signOut(getAuth());
     navigate("/");
   };
-
-  return (
+    return (
     <div className="menu-modern-root">
       {/* Top App Bar */}
       <div className="menu-appbar">
@@ -58,6 +61,16 @@ export default function MenuPage({ user }) {
             {item.label}
           </Link>
         ))}
+        {/* Announcement button for admins */}
+        {user?.role === "admin" && (
+          <button
+            className="menu-sidebar-link"
+            style={{ marginTop: 10 }}
+            onClick={() => setShowAnnouncementModal(true)}
+          >
+            Announcement
+          </button>
+        )}
         <div style={{ flexGrow: 1 }} />
         {user?.department && (
           <div className="menu-sidebar-department" style={{
@@ -83,8 +96,7 @@ export default function MenuPage({ user }) {
         </button>
       </div>
       <NotificationsBar user={user} />
-
-      {/* Main Centered Content */}
+            {/* Main Centered Content */}
       <div
         style={{
           textAlign: 'center',
@@ -134,6 +146,13 @@ export default function MenuPage({ user }) {
           </button>
         </div>
       </nav>
+
+      {/* Announcement Modal */}
+      <AnnouncementModal
+        open={showAnnouncementModal}
+        onClose={() => setShowAnnouncementModal(false)}
+        user={user}
+      />
     </div>
   );
 }
