@@ -8,27 +8,54 @@ export default function AnnouncementBar({ user }) {
 
   useEffect(() => {
     if (!user) return;
-    // Listen for announcements where this user is a recipient
-    const q = query(
+
+    // Query for announcements for this user
+    const q1 = query(
       collection(db, "announcements"),
-      where("recipients", "array-contains", user.uid),
-      
+      where("recipients", "array-contains", user.uid)
     );
-    const unsub = onSnapshot(q, (snap) => {
-      setAnnouncements(
-        snap.docs.map((d) => ({ id: d.id, ...d.data() }))
-      );
+    // Query for global announcements
+    const q2 = query(
+      collection(db, "announcements"),
+      where("toAll", "==", true)
+    );
+
+    // Listen to both queries and merge results
+    const unsub1 = onSnapshot(q1, (snap) => {
+      setAnnouncements((prev) => {
+        const newAnns = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Remove duplicates by id
+        const ids = new Set(newAnns.map(a => a.id));
+        return [...newAnns, ...prev.filter(a => !ids.has(a.id))];
+      });
     });
-    return () => unsub();
+
+    const unsub2 = onSnapshot(q2, (snap) => {
+      setAnnouncements((prev) => {
+        const newAnns = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Remove duplicates by id
+        const ids = new Set(newAnns.map(a => a.id));
+        return [...newAnns, ...prev.filter(a => !ids.has(a.id))];
+      });
+    });
+
+    return () => {
+      unsub1();
+      unsub2();
+    };
   }, [user]);
+    // Optionally, sort announcements by createdAt descending
+  const sortedAnnouncements = announcements
+    .filter(a => !dismissed.includes(a.id))
+    .sort((a, b) => {
+      if (!a.createdAt || !b.createdAt) return 0;
+      return b.createdAt.seconds - a.createdAt.seconds;
+    });
 
-  // Optionally, also show announcements sent to all users (if you want to support role-based)
-  // You can add another query for role-based if needed
-
-  if (!user || announcements.length === 0) return null;
+  if (!user || sortedAnnouncements.length === 0) return null;
 
   // Show the latest, not dismissed
-  const latest = announcements.find(a => !dismissed.includes(a.id));
+  const latest = sortedAnnouncements[0];
   if (!latest) return null;
 
   return (
