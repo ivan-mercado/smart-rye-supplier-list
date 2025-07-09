@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
 import { db } from "./firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
@@ -408,7 +408,7 @@ export default function MenuPage({ user }) {
                 try {
                   await addDoc(collection(db, "announcements"), {
                     message: announcementMsg,
-                    createdAt: new Date(),
+                    createdAt: serverTimestamp(),
                     fromUserId: user.uid,
                     recipients,
                   });
