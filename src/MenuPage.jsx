@@ -32,7 +32,7 @@ export default function MenuPage({ user }) {
     ? [
         menuItems[2], // Exam
         menuItems[3], // Results
-        menuItems[5], // Announcement button
+        menuItems[4], // Attendance
       ]
     : menuItems.slice(0, 3);
 
