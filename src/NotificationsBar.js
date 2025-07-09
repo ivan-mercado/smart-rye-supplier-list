@@ -295,17 +295,21 @@ export default function NotificationsBar({ user }) {
     // REMOVE onBlur
   >
     <div className="notif-title">
-      {notif.type === "exam_assigned" && "New Exam Assigned"}
-      {notif.type === "exam_submitted" && "Exam Submitted"}
-    </div>
-    <div>
-      {notif.type === "exam_assigned" && (
-        <>You have been assigned <b>{notif.examTitle}</b>.</>
-      )}
-      {notif.type === "exam_submitted" && (
-        <><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>
-      )}
-    </div>
+  {notif.type === "announcement" && "Announcement"}
+  {notif.type === "exam_assigned" && "New Exam Assigned"}
+  {notif.type === "exam_submitted" && "Exam Submitted"}
+</div>
+<div>
+  {notif.type === "announcement" && (
+    <>{notif.message}</>
+  )}
+  {notif.type === "exam_assigned" && (
+    <>You have been assigned <b>{notif.examTitle}</b>.</>
+  )}
+  {notif.type === "exam_submitted" && (
+    <><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>
+  )}
+</div>
     <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
       {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
     </div>
