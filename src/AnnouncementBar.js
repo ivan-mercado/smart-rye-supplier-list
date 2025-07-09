@@ -12,7 +12,7 @@ export default function AnnouncementBar({ user }) {
     const q = query(
       collection(db, "announcements"),
       where("recipients", "array-contains", user.uid),
-      orderBy("createdAt", "desc")
+      
     );
     const unsub = onSnapshot(q, (snap) => {
       setAnnouncements(
