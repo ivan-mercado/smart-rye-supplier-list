@@ -24,6 +24,7 @@
   transition: background 0.18s;
   font-size: 1.5rem;
   margin-bottom: 10px; /* keep your spacing */
+  padding: 0;
 }
 .mobile-announcement-btn:active,
 .mobile-announcement-btn:focus {
