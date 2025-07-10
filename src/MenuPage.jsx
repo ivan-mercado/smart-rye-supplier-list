@@ -31,7 +31,7 @@ export default function MenuPage({ user }) {
   const bottomNavItems = user?.role === "admin"
     ? [
         menuItems[2], // Exam
-        { label: "Announcement", action: "announcement" }, // Announcement button
+        menuItems[3], // Results
         menuItems[4], // Attendance
       ]
     : menuItems.slice(0, 3);
@@ -95,7 +95,7 @@ export default function MenuPage({ user }) {
           Logout
         </button>
       </div>
-      <NotificationsBar user={user} />
+      <NotificationsBar user={user} setShowAnnouncementModal={setShowAnnouncementModal} />
 
       <div className="menu-banner-container">
   {/* Replace the src with your actual banner GIF path */}
@@ -143,30 +143,18 @@ export default function MenuPage({ user }) {
           </div>
         )}
         <div className="menu-bottom-nav-links">
-          {bottomNavItems.map((item, idx) =>
-  item.action === "announcement" ? (
-    <button
-      key={item.label + idx}
-      className="menu-bottom-nav-link"
-      style={{ fontWeight: 700 }}
-      onClick={() => setShowAnnouncementModal(true)}
-      type="button"
-    >
-      {item.label}
-    </button>
-  ) : (
-    <Link
-      key={item.label + idx}
-      to={item.to}
-      className={
-        "menu-bottom-nav-link" +
-        (location.pathname === item.to ? " active" : "")
-      }
-    >
-      <div style={{ fontSize: "1rem", fontWeight: 700 }}>{item.label}</div>
-    </Link>
-  )
-)}
+          {bottomNavItems.map((item, idx) => (
+  <Link
+    key={item.label + idx}
+    to={item.to}
+    className={
+      "menu-bottom-nav-link" +
+      (location.pathname === item.to ? " active" : "")
+    }
+  >
+    <div style={{ fontSize: "1rem", fontWeight: 700 }}>{item.label}</div>
+  </Link>
+))}
           <button
             className="menu-bottom-nav-link menu-bottom-nav-logout"
             onClick={handleLogout}

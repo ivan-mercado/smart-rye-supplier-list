@@ -1,0 +1,32 @@
+.mobile-announcement-bell-wrapper {
+  position: fixed;
+  right: 24px;
+  bottom: 160px; /* Adjust as needed to appear above the bell */
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.mobile-announcement-btn {
+  position: absolute;
+  bottom: 70px; /* adjust as needed to position */
+  right: 0;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px #b3bfb6;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.mobile-announcement-btn:active,
+.mobile-announcement-btn:focus {
+  background: #e3f2fd;
+}

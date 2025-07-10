@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
+import { FaBullhorn } from "react-icons/fa";
+import "./NotificationsBar.css"; // Import the CSS file for styling
 import {
   collection,
   query,
@@ -11,7 +13,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-export default function NotificationsBar({ user }) {
+export default function NotificationsBar({ user, setShowAnnouncementModal }) {
   const [notifications, setNotifications] = useState([]);
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const [activeNotif, setActiveNotif] = useState(null);
@@ -263,16 +265,31 @@ export default function NotificationsBar({ user }) {
   </div>
 ))}
       </div>
-            {/* Mobile floating bell */}
-      <button className="notif-bell" onClick={() => setShowMobileDrawer(true)}>
-        <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.278c0 .456-.186.893-.516 1.212A3.003 3.003 0 0 0 4 15v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-.828-.336-1.578-.884-2.11a1.75 1.75 0 0 1-.516-1.212V8a6 6 0 0 0-6-6Zm0 18a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z"/>
-        </svg>
-        {unreadCount > 0 && (
-          <span className="notif-bell-badge">{unreadCount}</span>
-        )}
-      </button>
+      {/* Only show megaphone for admins */}
+{user?.role === "admin" && (
+  <div className="mobile-announcement-bell-wrapper">
+    <button
+      className="mobile-announcement-btn"
+      onClick={() => setShowAnnouncementModal(true)}
+      aria-label="Make Announcement"
+      type="button"
+    >
+      <FaBullhorn size={26} color="#1976d2" />
+    </button>
+  </div>
+)}
 
+{/* Always show bell for all users */}
+<div className="mobile-bell-wrapper">
+  <button className="notif-bell" onClick={() => setShowMobileDrawer(true)}>
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.278c0 .456-.186.893-.516 1.212A3.003 3.003 0 0 0 4 15v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-.828-.336-1.578-.884-2.11a1.75 1.75 0 0 1-.516-1.212V8a6 6 0 0 0-6-6Zm0 18a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z"/>
+    </svg>
+    {unreadCount > 0 && (
+      <span className="notif-bell-badge">{unreadCount}</span>
+    )}
+  </button>
+</div>
       {/* Mobile notification drawer */}
       {showMobileDrawer && (
         <div className="notif-mobile-drawer">
