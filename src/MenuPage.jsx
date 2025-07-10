@@ -99,15 +99,28 @@ export default function MenuPage({ user }) {
             {/* Main Centered Content */}
       <div className="menu-main-content">
   <div className="menu-main-content-inner">
-    <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
+    <div style={{ fontWeight: 800, fontSize: 28, color: '#1976d2', marginBottom: 16 }}>
       Website Under Development
     </div>
-    <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
+    <div style={{ fontSize: 20, color: '#222', marginBottom: 24 }}>
       This site is currently a work in progress.<br />
       Features and content are being added by the developer.
     </div>
-    <div style={{ fontSize: 15, color: '#888' }}>
+    <div style={{ fontSize: 17, color: '#888', marginBottom: 32 }}>
       Thank you for your patience!
+    </div>
+    {/* New containers below */}
+    <div className="menu-extra-container">
+      <h3>Upcoming Features</h3>
+      <ul>
+        <li>Supplier Management</li>
+        <li>Exam Results Dashboard</li>
+        <li>Attendance Tracking</li>
+      </ul>
+    </div>
+    <div className="menu-extra-container">
+      <h3>Contact & Support</h3>
+      <p>For questions, email <a href="mailto:support@example.com">support@example.com</a></p>
     </div>
   </div>
 </div>
@@ -149,9 +162,9 @@ export default function MenuPage({ user }) {
         onClose={() => setShowAnnouncementModal(false)}
         user={user}
       />
-      <footer className="menu-footer">
+      {/* <footer className="menu-footer">
   <span>© {new Date().getFullYear()} SmartRye Automatics. All Rights Reserved. &mdash; Web Design by Ivan Mercado</span>
-</footer>
+</footer> */}
     </div>
   );
 }
