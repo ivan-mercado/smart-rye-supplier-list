@@ -2,7 +2,7 @@
         
         .menu-modern-root {
           min-height: 100vh;
-          background: linear-gradient(135deg, #e3f0ff 0%, #f9fbfc 100%);
+          background: #fff;
           font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
           display: flex;
           flex-direction: column;
@@ -10,28 +10,30 @@
           padding-bottom: 80px;
         }
         .menu-appbar {
-          width: 100vw;
-          max-width: 100%;
-          position: fixed;
-          top: 0;
-          left: 0;
-          z-index: 10;
-          background: rgba(255,255,255,0.97);
-          box-shadow: 0 2px 12px #b0bec533;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 52px;
-        }
-        .menu-appbar-title {
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: #1976d2;
-          letter-spacing: 1.2px;
-          text-shadow: 0 2px 8px #b3bfb6;
-          flex: 1;
-          text-align: center;
-        }
+  width: 100vw;
+  max-width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: #222d32; /* dark color */
+  box-shadow: 0 2px 12px #b0bec533;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* align left */
+  height: 52px;
+  padding-left: 32px; /* add some left padding */
+}
+
+.menu-appbar-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff; /* white text */
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 8px #222d32;
+  flex: 0;
+  text-align: left;
+}
         .menu-sidebar {
           position: fixed;
           top: 52px;
@@ -40,8 +42,8 @@
           height: calc(100vh - 52px);
           background: #415256;
           box-shadow: 4px 0 32px #b3bfb6;
-          border-top-right-radius: 28px;
-          border-bottom-right-radius: 28px;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
           backdrop-filter: blur(18px);
           z-index: 2;
           display: flex;
@@ -208,6 +210,7 @@
           }
           .menu-appbar {
             height: 48px;
+            padding-left: 16px;
           }
           .menu-appbar-title {
             font-size: 1.05rem;
@@ -315,3 +318,90 @@
     font-size: 1.08rem;
   }
 }
+
+.menu-footer {
+  background: #415256;
+  color: #fff;
+  text-align: center;
+  padding: 18px 0 14px 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: fixed;
+  left: 180px; /* sidebar width */
+  right: 280px; /* notification bar width */
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -2px 12px #b0bec533;
+}
+
+@media (max-width: 1199px) {
+  .menu-footer {
+    right: 0; /* Hide right margin if notif bar is not visible */
+  }
+}
+
+@media (max-width: 899px) {
+  .menu-footer {
+    left: 0;
+    right: 0;
+    width: 100vw;
+    font-size: 0.98rem;
+    padding: 14px 0 10px 0;
+  }
+}
+
+.menu-main-content {
+  position: relative;
+  margin: 48px 300px 48px 200px; /* top, right, bottom, left */
+  /* left: sidebar width + some gap, right: notif bar width + some gap */
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-main-content-inner {
+  width: 100%;
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 4px 32px #b3bfb633;
+  padding: 48px 40px 40px 40px;
+  min-height: 320px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 1199px) {
+  .menu-main-content {
+    margin-right: 0;
+  }
+}
+@media (max-width: 899px) {
+  .menu-main-content {
+    margin: 24px 0 80px 0;
+    padding: 0 0;
+  }
+  .menu-main-content-inner {
+    border-radius: 18px;
+    padding: 24px 8px 24px 8px;
+    min-height: 180px;
+    max-width: 98vw;
+  }
+}
+
+.menu-compact-container {
+  max-width: 1200px;   /* or 1100px, 1000px, etc. */
+  margin: 0 auto;
+  background: #fff;
+  min-height: 90vh;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+  border-radius: 18px;
+  padding: 32px 24px 24px 24px;
+  position: relative;
+  z-index: 1;
+}
+

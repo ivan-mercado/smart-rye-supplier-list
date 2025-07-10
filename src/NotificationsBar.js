@@ -60,8 +60,8 @@ export default function NotificationsBar({ user }) {
           background: #415256;
           color: #fff;
           box-shadow: -4px 0 32px #b3bfb6;
-          border-top-left-radius: 28px;
-          border-bottom-left-radius: 28px;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
           z-index: 3;
           display: flex;
           flex-direction: column;

@@ -97,24 +97,20 @@ export default function MenuPage({ user }) {
       </div>
       <NotificationsBar user={user} />
             {/* Main Centered Content */}
-      <div
-        style={{
-          textAlign: 'center',
-          padding: window.innerWidth < 900 ? 16 : 24,
-          marginTop: window.innerWidth < 900 ? 60 : 0,
-        }}
-      >
-        <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
-          Website Under Development
-        </div>
-        <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
-          This site is currently a work in progress.<br />
-          Features and content are being added by the developer.
-        </div>
-        <div style={{ fontSize: 15, color: '#888' }}>
-          Thank you for your patience!
-        </div>
-      </div>
+      <div className="menu-main-content">
+  <div className="menu-main-content-inner">
+    <div style={{ fontWeight: 800, fontSize: 22, color: '#1976d2', marginBottom: 10 }}>
+      Website Under Development
+    </div>
+    <div style={{ fontSize: 17, color: '#222', marginBottom: 18 }}>
+      This site is currently a work in progress.<br />
+      Features and content are being added by the developer.
+    </div>
+    <div style={{ fontSize: 15, color: '#888' }}>
+      Thank you for your patience!
+    </div>
+  </div>
+</div>
 
       {/* Bottom Navigation for Mobile */}
       <nav className="menu-bottom-nav">
@@ -153,6 +149,9 @@ export default function MenuPage({ user }) {
         onClose={() => setShowAnnouncementModal(false)}
         user={user}
       />
+      <footer className="menu-footer">
+  <span>© {new Date().getFullYear()} SmartRye Automatics. All Rights Reserved. &mdash; Web Design by Ivan Mercado</span>
+</footer>
     </div>
   );
 }

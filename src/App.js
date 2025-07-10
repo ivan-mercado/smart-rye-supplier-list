@@ -1051,7 +1051,7 @@ function App() {
       maxWidth: 1300,
       margin: '40px auto',
       padding: 32,
-      background: 'linear-gradient(135deg, #e3f0ff 0%, #f9fbfc 100%)',
+      background: '#fff',
       borderRadius: 24,
       boxShadow: '0 8px 32px #cfd8dc',
       minHeight: '90vh'
