@@ -274,7 +274,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
       aria-label="Make Announcement"
       type="button"
     >
-      <FaBullhorn size={28} color="#fff" />
+      <FaBullhorn size={24} color="#fff" />
     </button>
   </div>
 )}
