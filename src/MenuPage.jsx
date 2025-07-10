@@ -96,6 +96,15 @@ export default function MenuPage({ user }) {
         </button>
       </div>
       <NotificationsBar user={user} />
+
+      <div className="menu-banner-container">
+  {/* Replace the src with your actual banner GIF path */}
+  <img
+    src="/banner.gif"
+    alt="Banner"
+    className="menu-banner-gif"
+  />
+</div>
             {/* Main Centered Content */}
       <div className="menu-main-content">
   <div className="menu-main-content-inner">
