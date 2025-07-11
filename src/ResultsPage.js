@@ -213,72 +213,67 @@ export default function ResultsPage({ user }) {
                   {openCardName === name ? 'Hide Exams ▲' : 'View Exams ▼'}
                 </span>
               </div>
-              <AnimatePresence>
-                {openCardName === name && (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="exam-list"
-                  >
-                    {userResults.map((result) => (
-                      <div className="exam-item" key={result.id}>
-                        <div className="exam-info">
-                          <strong>
-                            {examTitles[result.examId] || result.examId}
-                          </strong>
-                          <div>
-                            {result.submittedAt?.toDate?.().toLocaleString?.() ||
-                              ''}
-                          </div>
-                        </div>
-                        <div className="exam-actions">
-                          {deleteMode && selectedExaminee === name && (
-                            <input
-                              type="checkbox"
-                              checked={selectedResults.includes(result.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedResults((prev) => [
-                                    ...prev,
-                                    result.id
-                                  ]);
-                                } else {
-                                  setSelectedResults((prev) =>
-                                    prev.filter((id) => id !== result.id)
-                                  );
-                                }
-                              }}
-                            />
-                          )}
-                          <button
-                            onClick={async () => {
-                              setShowAnswers(false);
-                              setViewResult(result);
-                              const examSnap = await getDocs(
-                                query(
-                                  collection(db, 'exams'),
-                                  where('__name__', '==', result.examId)
-                                )
-                              );
-                              if (!examSnap.empty) {
-                                setExamQuestions(
-                                  examSnap.docs[0].data().questions
-                                );
-                              } else {
-                                setExamQuestions([]);
-                              }
-                            }}
-                          >
-                            View
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <AnimatePresence initial={false}>
+  {openCardName === name && (
+    <motion.div
+      key="exam-list"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="exam-list"
+      style={{ overflow: 'hidden' }}
+    >
+      {userResults.map((result) => (
+        <div className="exam-item" key={result.id}>
+          <div className="exam-info">
+            <strong>{examTitles[result.examId] || result.examId}</strong>
+            <div>
+              {result.submittedAt?.toDate?.().toLocaleString?.() || ''}
+            </div>
+          </div>
+          <div className="exam-actions">
+            {deleteMode && selectedExaminee === name && (
+              <input
+                type="checkbox"
+                checked={selectedResults.includes(result.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedResults((prev) => [...prev, result.id]);
+                  } else {
+                    setSelectedResults((prev) =>
+                      prev.filter((id) => id !== result.id)
+                    );
+                  }
+                }}
+              />
+            )}
+            <button
+              onClick={async () => {
+                setShowAnswers(false);
+                setViewResult(result);
+                const examSnap = await getDocs(
+                  query(
+                    collection(db, 'exams'),
+                    where('__name__', '==', result.examId)
+                  )
+                );
+                if (!examSnap.empty) {
+                  setExamQuestions(examSnap.docs[0].data().questions);
+                } else {
+                  setExamQuestions([]);
+                }
+              }}
+            >
+              View
+            </button>
+          </div>
+        </div>
+      ))}
+    </motion.div>
+  )}
+</AnimatePresence>
+
             </motion.div>
           ))}
         </div>

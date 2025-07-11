@@ -31,9 +31,9 @@ export default function TakeExamPage({ user }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
-  const [fullName, setFullName] = useState('');
-  const [nameEntered, setNameEntered] = useState(false);
+  const savedNameKey = `user-fullname-${user.uid}`;
+  const [fullName, setFullName] = useState(localStorage.getItem(savedNameKey) || '');
+  const [nameEntered, setNameEntered] = useState(!!localStorage.getItem(savedNameKey));
 
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const isMobile = window.innerWidth < 700;
@@ -126,8 +126,11 @@ export default function TakeExamPage({ user }) {
           />
           <button
             onClick={() => {
-              if (fullName.trim()) setNameEntered(true);
-            }}
+  if (fullName.trim()) {
+    localStorage.setItem(savedNameKey, fullName.trim());
+    setNameEntered(true);
+  }
+}}
             style={{
               padding: isMobile ? '12px 0' : '10px 24px',
               width: isMobile ? '90%' : undefined,

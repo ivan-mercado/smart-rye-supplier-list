@@ -341,12 +341,22 @@
     padding: 16px;
   }
 
-  .exam-item {
-    padding: 10px;
+  .filters {
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .card-header {
+  .filters input,
+  .filters select,
+  .filters button {
+    width: 100%;
+    max-width: 100%;
+    flex: unset;
+  }
+
+  .top-bar {
     flex-direction: column;
+    gap: 12px;
     align-items: flex-start;
   }
 
@@ -354,12 +364,18 @@
     font-size: 18px;
   }
 
-  .filters {
+  .card-header {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .exam-item {
+    padding: 10px;
   }
 
   .exam-actions {
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .score-badge-modal {
@@ -367,5 +383,6 @@
     padding: 6px 14px;
   }
 }
+
 
 /* ResultsPage.css (Mobile Friendly Additions) */
