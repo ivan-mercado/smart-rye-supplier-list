@@ -1,0 +1,161 @@
+.results-page {
+  padding: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.top-bar button {
+  background: #1976d2;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.top-bar button:hover {
+  background: #1565c0;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filters input,
+.filters select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.filters button {
+  background: #e0e0e0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.examinee-card {
+  background: #f5faff;
+  border: 1px solid #cce0f5;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  color: #1976d2;
+  margin-bottom: 8px;
+}
+
+.exam-list {
+  padding-left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exam-item {
+  background: #ffffff;
+  border: 1px solid #ddeaf7;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exam-info {
+  flex-grow: 1;
+}
+
+.exam-info strong {
+  display: block;
+  color: #222;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.exam-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exam-actions button {
+  background: #1976d2;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.exam-actions input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+/* Score Badge */
+.score-badge-modal {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-size: 18px;
+  border-radius: 12px;
+  margin: 20px auto 0;
+  text-align: center;
+  width: fit-content;
+}
+
+/* Answers Modal Styles */
+.answers-modal-overlay {
+  margin-top: 18px;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.answers-modal {
+  padding: 12px 4px 0;
+}
+
+.answers-modal-close {
+  background: #f5f5f5;
+  color: #555;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
