@@ -9,6 +9,7 @@ import {
   doc
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import './ResultsPage.css';
 
@@ -61,23 +62,24 @@ export default function ResultsPage({ user }) {
     return score;
   }
 
-  const refetchResults = async () => {
-    setLoading(true);
-    let q = collection(db, 'results');
-    if (user.role !== 'admin') {
-      q = query(q, where('userId', '==', user.uid));
-    }
-    const snapshot = await getDocs(q);
-    setResults(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    setLoading(false);
-    setSelectedResults((prev) =>
-      prev.filter((id) => snapshot.docs.some((doc) => doc.id === id))
-    );
-  };
+  const refetchResults = useCallback(async () => {
+  setLoading(true);
+  let q = collection(db, 'results');
+  if (user.role !== 'admin') {
+    q = query(q, where('userId', '==', user.uid));
+  }
+  const snapshot = await getDocs(q);
+  setResults(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+  setLoading(false);
+  setSelectedResults((prev) =>
+    prev.filter((id) => snapshot.docs.some((doc) => doc.id === id))
+  );
+}, [user]);
 
   useEffect(() => {
-    refetchResults();
-  }, [user]);
+  refetchResults();
+}, [refetchResults]);
+
 
   useEffect(() => {
     if (deleteMode && openCardName) {
