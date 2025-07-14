@@ -61,7 +61,7 @@ export default function ExamsPage({ user }) {
     };
     fetchResults();
   }, [user]);
-    // Admin: Create exam
+  // Admin: Create exam
   const handleCreateExam = async (e) => {
     e.preventDefault();
     const sanitizedQuestions = questions.map(q => ({
@@ -88,13 +88,22 @@ export default function ExamsPage({ user }) {
     }
     setSelectedExams([]);
   };
-
-  // --- Admin UI ---
+    // --- Admin UI ---
   if (user?.role === "admin") {
     return (
-      <div className="exams-admin-root">
+      <>
         <style>
           {`
+          @keyframes fadeInUp {
+            0% {
+              opacity: 0;
+              transform: translateY(40px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
           .exams-admin-root {
             max-width: 700px;
             margin: 40px auto;
@@ -103,6 +112,7 @@ export default function ExamsPage({ user }) {
             border-radius: 24px;
             box-shadow: 0 8px 32px #cfd8dc;
             min-height: 500px;
+            animation: fadeInUp 0.7s cubic-bezier(0.23, 1, 0.32, 1);
           }
           .exams-admin-form-row {
             display: flex;
@@ -150,6 +160,7 @@ export default function ExamsPage({ user }) {
             cursor: pointer;
             margin-bottom: 18px;
             margin-right: 8px;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
           }
           .exams-admin-btn.green {
             background: #43a047;
@@ -160,8 +171,9 @@ export default function ExamsPage({ user }) {
             margin-bottom: 0;
           }
           .exams-admin-btn.gray {
-            background: #b0bec5;
-            color: #fff;
+            background: #b0bec5 !important;
+            color: #fff !important;
+            cursor: not-allowed !important;
             margin-bottom: 0;
           }
           .exams-admin-exam-list {
@@ -259,122 +271,144 @@ export default function ExamsPage({ user }) {
           }
           `}
         </style>
-        <button
-          onClick={() => navigate('/')}
-          className="exams-admin-btn"
-          style={{
-            background: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '10px 24px',
-            fontWeight: 700,
-            fontSize: 16,
-            marginBottom: 24,
-            boxShadow: '0 2px 8px #e3e3e3',
-            cursor: 'pointer'
-          }}
-        >
-          ← Back to Main Menu
-        </button>
-        <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 24 }}>Create New Exam</h2>
-        <form onSubmit={handleCreateExam} style={{ marginBottom: 40 }}>
-          {/* ... your create exam form ... */}
-          <div className="exams-admin-form-row">
-            <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Exam Title"
-              required
-            />
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Description"
-              style={{ minHeight: 44 }}
-            />
-          </div>
-          <h4 style={{ color: '#1976d2', fontWeight: 700, marginBottom: 10 }}>Questions</h4>
-          <div className="exams-admin-questions">
-            {questions.map((q, idx) => (
-              <div key={idx} className="exams-admin-question-block">
-                <div className="exams-admin-question-row">
-                  <select
-                    value={q.type}
-                    onChange={e => {
-                      const newQuestions = [...questions];
-                      newQuestions[idx].type = e.target.value;
-                      if (e.target.value === 'mcq') newQuestions[idx].options = [''];
-                      if (e.target.value !== 'mcq') newQuestions[idx].options = [''];
-                      setQuestions(newQuestions);
-                    }}
-                  >
-                    <option value="text">Text</option>
-                    <option value="mcq">MCQ</option>
-                    <option value="likert">Likert (1-5)</option>
-                  </select>
-                  <input
-                    value={q.question}
-                    onChange={e => {
-                      const newQuestions = [...questions];
-                      newQuestions[idx].question = e.target.value;
-                      setQuestions(newQuestions);
-                    }}
-                    placeholder="Question"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="exams-admin-btn red"
-                    onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
-                  >
-                    Remove
-                  </button>
-                </div>
-                {/* MCQ Options */}
-                {q.type === 'mcq' && (
-                  <div style={{ marginLeft: 0 }}>
-                    {q.options.map((opt, oidx) => (
-                      <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <input
-                          value={opt}
-                          onChange={e => {
-                            const newQuestions = [...questions];
-                            newQuestions[idx].options[oidx] = e.target.value;
-                            setQuestions(newQuestions);
-                          }}
-                          placeholder={`Option ${oidx + 1}`}
-                          required
-                        />
-                        <button
-                          type="button"
-                          className="exams-admin-btn red"
-                          onClick={() => {
-                            const newQuestions = [...questions];
-                            newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
-                            setQuestions(newQuestions);
-                          }}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      className="exams-admin-btn"
-                      onClick={() => {
+        <div className="exams-admin-root">
+          <button
+            onClick={() => navigate('/')}
+            className="exams-admin-btn"
+            style={{
+              background: '#1976d2',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 24px',
+              fontWeight: 700,
+              fontSize: 16,
+              marginBottom: 24,
+              boxShadow: '0 2px 8px #e3e3e3',
+              cursor: 'pointer'
+            }}
+          >
+            ← Back to Main Menu
+          </button>
+          <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 24 }}>Create New Exam</h2>
+          <form onSubmit={handleCreateExam} style={{ marginBottom: 40 }}>
+            {/* ... your create exam form ... */}
+            <div className="exams-admin-form-row">
+              <input
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="Exam Title"
+                required
+              />
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="Description"
+                style={{ minHeight: 44 }}
+              />
+            </div>
+            <h4 style={{ color: '#1976d2', fontWeight: 700, marginBottom: 10 }}>Questions</h4>
+            <div className="exams-admin-questions">
+              {questions.map((q, idx) => (
+                <div key={idx} className="exams-admin-question-block">
+                  <div className="exams-admin-question-row">
+                    <select
+                      value={q.type}
+                      onChange={e => {
                         const newQuestions = [...questions];
-                        newQuestions[idx].options.push('');
+                        newQuestions[idx].type = e.target.value;
+                        if (e.target.value === 'mcq') newQuestions[idx].options = [''];
+                        if (e.target.value !== 'mcq') newQuestions[idx].options = [''];
                         setQuestions(newQuestions);
                       }}
-                      style={{ marginTop: 4 }}
                     >
-                      + Add Option
+                      <option value="text">Text</option>
+                      <option value="mcq">MCQ</option>
+                      <option value="likert">Likert (1-5)</option>
+                    </select>
+                    <input
+                      value={q.question}
+                      onChange={e => {
+                        const newQuestions = [...questions];
+                        newQuestions[idx].question = e.target.value;
+                        setQuestions(newQuestions);
+                      }}
+                      placeholder="Question"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="exams-admin-btn red"
+                      onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
+                    >
+                      Remove
                     </button>
-                    {/* MCQ Correct Answer */}
+                  </div>
+                  {/* MCQ Options */}
+                  {q.type === 'mcq' && (
+                    <div style={{ marginLeft: 0 }}>
+                      {q.options.map((opt, oidx) => (
+                        <div key={oidx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <input
+                            value={opt}
+                            onChange={e => {
+                              const newQuestions = [...questions];
+                              newQuestions[idx].options[oidx] = e.target.value;
+                              setQuestions(newQuestions);
+                            }}
+                            placeholder={`Option ${oidx + 1}`}
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="exams-admin-btn red"
+                            onClick={() => {
+                              const newQuestions = [...questions];
+                              newQuestions[idx].options = newQuestions[idx].options.filter((_, i) => i !== oidx);
+                              setQuestions(newQuestions);
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="exams-admin-btn"
+                        onClick={() => {
+                          const newQuestions = [...questions];
+                          newQuestions[idx].options.push('');
+                          setQuestions(newQuestions);
+                        }}
+                        style={{ marginTop: 4 }}
+                      >
+                        + Add Option
+                      </button>
+                      {/* MCQ Correct Answer */}
+                      <div style={{ marginTop: 8 }}>
+                        <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
+                        <select
+                          value={q.correctAnswer || ''}
+                          onChange={e => {
+                            const newQuestions = [...questions];
+                            newQuestions[idx].correctAnswer = e.target.value;
+                            setQuestions(newQuestions);
+                          }}
+                          style={{ marginLeft: 8 }}
+                        >
+                          <option value="">Select correct option</option>
+                          {q.options.map((opt, oidx) => (
+                            <option key={oidx} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  {/* Text Correct Answer */}
+                  {q.type === 'text' && (
                     <div style={{ marginTop: 8 }}>
                       <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-                      <select
+                      <input
                         value={q.correctAnswer || ''}
                         onChange={e => {
                           const newQuestions = [...questions];
@@ -382,232 +416,228 @@ export default function ExamsPage({ user }) {
                           setQuestions(newQuestions);
                         }}
                         style={{ marginLeft: 8 }}
-                      >
-                        <option value="">Select correct option</option>
-                        {q.options.map((opt, oidx) => (
-                          <option key={oidx} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                        placeholder="Correct answer"
+                      />
                     </div>
-                  </div>
-                )}
-                {/* Text Correct Answer */}
-                {q.type === 'text' && (
-                  <div style={{ marginTop: 8 }}>
-                    <label style={{ fontWeight: 600, color: '#1976d2' }}>Correct Answer: </label>
-                    <input
-                      value={q.correctAnswer || ''}
-                      onChange={e => {
-                        const newQuestions = [...questions];
-                        newQuestions[idx].correctAnswer = e.target.value;
-                        setQuestions(newQuestions);
-                      }}
-                      style={{ marginLeft: 8 }}
-                      placeholder="Correct answer"
-                    />
-                  </div>
-                )}
-                {/* Likert: (optional, usually not scored) */}
-                {q.type === 'likert' && (
-                  <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
-                    Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="exams-admin-btn"
-            onClick={() => setQuestions([...questions, { type: 'text', question: '', options: [''], correctAnswer: '' }])}
-          >
-            + Add Question
-          </button>
-          <button
-            type="submit"
-            className="exams-admin-btn green"
-          >
-            Create Exam
-          </button>
-        </form>
-        <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 18 }}>All Exams</h2>
-        <div style={{ marginBottom: 16, display: 'flex', gap: 10 }}>
-          <button
-            disabled={selectedExams.length === 0}
-            className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : " red"}`}
-            onClick={handleDeleteSelected}
-          >
-            Delete Selected
-          </button>
-          <button
-            disabled={selectedExams.length === 0}
-            className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : ""}`}
-            style={{ background: '#1976d2', color: '#fff' }}
-            onClick={() => setShowMultiSendModal(true)}
-          >
-            Send Multiple Exams
-          </button>
-        </div>
-        {loading ? <p>Loading...</p> : (
-          <ul className="exams-admin-exam-list">
-            {exams.map(exam => (
-              <li key={exam.id} className="exams-admin-exam-item">
-                <input
-                  type="checkbox"
-                  checked={selectedExams.includes(exam.id)}
-                  onChange={e => {
-                    setSelectedExams(prev =>
-                      e.target.checked
-                        ? [...prev, exam.id]
-                        : prev.filter(id => id !== exam.id)
-                    );
-                  }}
-                />
-                <div style={{ flex: 1 }}>
-                  <strong>{exam.title}</strong>
-                  <div style={{ color: '#1976d2', fontSize: 15 }}>{exam.description}</div>
+                  )}
+                  {/* Likert: (optional, usually not scored) */}
+                  {q.type === 'likert' && (
+                    <div style={{ marginTop: 8, color: '#1976d2', fontWeight: 500 }}>
+                      Scale: 1 (Strongly Disagree) to 5 (Strongly Agree)
+                    </div>
+                  )}
                 </div>
-                <button
-                  onClick={() => {
-                    setSendExamId(exam.id);
-                    setShowSendModal(true);
-                  }}
-                  className="exams-admin-btn"
-                  style={{ marginLeft: 16 }}
+              ))}
+            </div>
+            <button
+              type="button"
+              className="exams-admin-btn"
+              onClick={() => setQuestions([...questions, { type: 'text', question: '', options: [''], correctAnswer: '' }])}
+            >
+              + Add Question
+            </button>
+            <button
+              type="submit"
+              className="exams-admin-btn green"
+            >
+              Create Exam
+            </button>
+          </form>
+          <h2 style={{ color: '#1976d2', fontWeight: 800, marginBottom: 18 }}>All Exams</h2>
+          <div style={{ marginBottom: 16, display: 'flex', gap: 10 }}>
+            <button
+              type="button"
+              className="exams-admin-btn"
+              style={{ background: '#1976d2', color: '#fff' }}
+              onClick={() => {
+                if (selectedExams.length === exams.length) {
+                  setSelectedExams([]);
+                } else {
+                  setSelectedExams(exams.map(e => e.id));
+                }
+              }}
+            >
+              {selectedExams.length === exams.length && exams.length > 0 ? "Deselect All" : "Select All"}
+            </button>
+            <button
+              disabled={selectedExams.length === 0}
+              className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : " red"}`}
+              onClick={handleDeleteSelected}
+            >
+              Delete Selected
+            </button>
+            <button
+              disabled={selectedExams.length === 0}
+              className={`exams-admin-btn${selectedExams.length === 0 ? " gray" : ""}`}
+              style={{
+                background: selectedExams.length === 0 ? '#b0bec5' : '#1976d2',
+                color: '#fff',
+                cursor: selectedExams.length === 0 ? 'not-allowed' : 'pointer',
+              }}
+              onClick={() => {
+                if (selectedExams.length > 0) setShowMultiSendModal(true);
+              }}
+            >
+              Send Multiple Exams
+            </button>
+          </div>
+                    {loading ? <p>Loading...</p> : (
+            <ul className="exams-admin-exam-list">
+              {exams.map(exam => (
+                <li key={exam.id} className="exams-admin-exam-item">
+                  <input
+                    type="checkbox"
+                    checked={selectedExams.includes(exam.id)}
+                    onChange={e => {
+                      setSelectedExams(prev =>
+                        e.target.checked
+                          ? [...prev, exam.id]
+                          : prev.filter(id => id !== exam.id)
+                      );
+                    }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <strong>{exam.title}</strong>
+                    <div style={{ color: '#1976d2', fontSize: 15 }}>{exam.description}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSendExamId(exam.id);
+                      setShowSendModal(true);
+                    }}
+                    className="exams-admin-btn"
+                    style={{ marginLeft: 16 }}
+                  >
+                    Send to User
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* Send to User Modal (single exam) */}
+          {showSendModal && (
+            <div style={{
+              position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+              background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            }}>
+              <div className="exams-admin-send-modal">
+                <div className="send-modal-title">Send Exam to User</div>
+                <select
+                  className="send-modal-select"
+                  value={sendToUser}
+                  onChange={e => setSendToUser(e.target.value)}
                 >
-                  Send to User
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-                {/* Send to User Modal (single exam) */}
-        {showSendModal && (
-          <div style={{
-            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-            background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-          }}>
-            <div className="exams-admin-send-modal">
-              <div className="send-modal-title">Send Exam to User</div>
-              <select
-                className="send-modal-select"
-                value={sendToUser}
-                onChange={e => setSendToUser(e.target.value)}
-              >
-                <option value="">Select user...</option>
-                {allUsers
-                  .filter(u => u.role === "user" && !((exams.find(e => e.id === sendExamId)?.assignedTo || []).includes(u.uid)))
-                  .map(u => (
-                    <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
-                ))}
-              </select>
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-                <button
-                  disabled={!sendToUser}
-                  className="send-modal-btn send"
-                  onClick={async () => {
-  if (!sendToUser) return;
-  try {
-    const examRef = doc(db, 'exams', sendExamId);
-    await updateDoc(examRef, {
-      assignedTo: arrayUnion(sendToUser)
-    });
-    console.log("Exam assigned to user:", sendToUser);
-
-    await addDoc(collection(db, "notifications"), {
-      toUserId: sendToUser,
-      type: "exam_assigned",
-      examId: sendExamId,
-      examTitle: exams.find(e => e.id === sendExamId)?.title || "",
-      timestamp: serverTimestamp(),
-      read: false,
-    });
-    console.log("Notification created for user:", sendToUser);
-  } catch (err) {
-    console.error("Error assigning exam or creating notification:", err);
-    alert("Failed to assign exam or create notification. See console for details.");
-  }
-  setShowSendModal(false);
-  setSendToUser('');
-  setSendExamId(null);
-}}
-                >
-                  Send
-                </button>
-                <button
-                  className="send-modal-btn cancel"
-                  onClick={() => {
-                    setShowSendModal(false);
-                    setSendToUser('');
-                    setSendExamId(null);
-                  }}
-                >
-                  Cancel
-                </button>
+                  <option value="">Select user...</option>
+                  {allUsers
+                    .filter(u => u.role === "user" && !((exams.find(e => e.id === sendExamId)?.assignedTo || []).includes(u.uid)))
+                    .map(u => (
+                      <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
+                  ))}
+                </select>
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+                  <button
+                    disabled={!sendToUser}
+                    className="send-modal-btn send"
+                    onClick={async () => {
+                      if (!sendToUser) return;
+                      try {
+                        const examRef = doc(db, 'exams', sendExamId);
+                        await updateDoc(examRef, {
+                          assignedTo: arrayUnion(sendToUser)
+                        });
+                        await addDoc(collection(db, "notifications"), {
+                          toUserId: sendToUser,
+                          type: "exam_assigned",
+                          examId: sendExamId,
+                          examTitle: exams.find(e => e.id === sendExamId)?.title || "",
+                          timestamp: serverTimestamp(),
+                          read: false,
+                        });
+                      } catch (err) {
+                        alert("Failed to assign exam or create notification. See console for details.");
+                      }
+                      setShowSendModal(false);
+                      setSendToUser('');
+                      setSendExamId(null);
+                    }}
+                  >
+                    Send
+                  </button>
+                  <button
+                    className="send-modal-btn cancel"
+                    onClick={() => {
+                      setShowSendModal(false);
+                      setSendToUser('');
+                      setSendExamId(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {/* Send Multiple Exams Modal */}
-        {showMultiSendModal && (
-          <div style={{
-            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-            background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-          }}>
-            <div className="exams-admin-send-modal">
-              <div className="send-modal-title">Send Selected Exams to User</div>
-              <select
-                className="send-modal-select"
-                value={sendToUser}
-                onChange={e => setSendToUser(e.target.value)}
-              >
-                <option value="">Select user...</option>
-                {allUsers
-                  .filter(u => u.role === "user")
-                  .map(u => (
-                    <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
-                ))}
-              </select>
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-                <button
-                  disabled={!sendToUser}
-                  className="send-modal-btn send"
-                  onClick={async () => {
-                    if (!sendToUser) return;
-                    for (const examId of selectedExams) {
-                      const examRef = doc(db, 'exams', examId);
-                      await updateDoc(examRef, {
-                        assignedTo: arrayUnion(sendToUser)
-                      });
-                      await addDoc(collection(db, "notifications"), {
-  toUserId: sendToUser,
-  type: "exam_assigned",
-  examId: examId,
-  examTitle: exams.find(e => e.id === examId)?.title || "",
-  timestamp: serverTimestamp(),
-  read: false,
-});
-                    }
-                    setShowMultiSendModal(false);
-                    setSendToUser('');
-                  }}
+          )}
+          {/* Send Multiple Exams Modal */}
+          {showMultiSendModal && (
+            <div style={{
+              position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+              background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            }}>
+              <div className="exams-admin-send-modal">
+                <div className="send-modal-title">Send Selected Exams to User</div>
+                <select
+                  className="send-modal-select"
+                  value={sendToUser}
+                  onChange={e => setSendToUser(e.target.value)}
                 >
-                  Send
-                </button>
-                <button
-                  className="send-modal-btn cancel"
-                  onClick={() => {
-                    setShowMultiSendModal(false);
-                    setSendToUser('');
-                  }}
-                >
-                  Cancel
-                </button>
+                  <option value="">Select user...</option>
+                  {allUsers
+                    .filter(u => u.role === "user")
+                    .map(u => (
+                      <option key={u.uid} value={u.uid}>{u.email} ({u.role})</option>
+                  ))}
+                </select>
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+                  <button
+                    disabled={!sendToUser}
+                    className="send-modal-btn send"
+                    onClick={async () => {
+                      if (!sendToUser) return;
+                      for (const examId of selectedExams) {
+                        const examRef = doc(db, 'exams', examId);
+                        await updateDoc(examRef, {
+                          assignedTo: arrayUnion(sendToUser)
+                        });
+                        await addDoc(collection(db, "notifications"), {
+                          toUserId: sendToUser,
+                          type: "exam_assigned",
+                          examId: examId,
+                          examTitle: exams.find(e => e.id === examId)?.title || "",
+                          timestamp: serverTimestamp(),
+                          read: false,
+                        });
+                      }
+                      setShowMultiSendModal(false);
+                      setSendToUser('');
+                    }}
+                  >
+                    Send
+                  </button>
+                  <button
+                    className="send-modal-btn cancel"
+                    onClick={() => {
+                      setShowMultiSendModal(false);
+                      setSendToUser('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     );
   }
   // --- User UI ---

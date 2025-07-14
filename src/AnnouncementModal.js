@@ -7,10 +7,10 @@ export default function AnnouncementModal({ open, onClose, user }) {
   const [recipientType, setRecipientType] = useState("all_users");
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (recipientType === "specific") {
-      // Fetch all users for selection
       getDocs(collection(db, "users")).then(snapshot => {
         setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       });
@@ -32,7 +32,6 @@ export default function AnnouncementModal({ open, onClose, user }) {
       recipients = selectedUsers;
     }
 
-    // Send notification to each recipient
     await Promise.all(
       recipients.map(uid =>
         addDoc(collection(db, "notifications"), {
@@ -48,10 +47,19 @@ export default function AnnouncementModal({ open, onClose, user }) {
     setMessage("");
     setRecipientType("all_users");
     setSelectedUsers([]);
+    setSearch("");
     onClose();
   };
 
   if (!open) return null;
+
+  // Filter users by search
+  const filteredUsers = users.filter(
+    u =>
+      (u.displayName || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.email || "").toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="announcement-modal-backdrop">
       <div className="announcement-modal">
@@ -61,7 +69,7 @@ export default function AnnouncementModal({ open, onClose, user }) {
           onChange={e => setMessage(e.target.value)}
           placeholder="Type your announcement here..."
         />
-        <div>
+        <div style={{ margin: "12px 0" }}>
           <label>
             <input
               type="radio"
@@ -100,24 +108,46 @@ export default function AnnouncementModal({ open, onClose, user }) {
           </label>
         </div>
         {recipientType === "specific" && (
-          <div>
-            {users.map(u => (
-              <label key={u.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedUsers.includes(u.id)}
-                  onChange={e => {
-                    if (e.target.checked) setSelectedUsers([...selectedUsers, u.id]);
-                    else setSelectedUsers(selectedUsers.filter(id => id !== u.id));
-                  }}
-                />
-                {u.displayName || u.email}
-              </label>
-            ))}
+          <div style={{ marginBottom: 16 }}>
+            <input
+              type="text"
+              placeholder="Search users by name or email..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                width: "95%",
+                padding: "8px",
+                marginBottom: "10px",
+                borderRadius: "6px",
+                border: "1px solid #b0bec5"
+              }}
+            />
+            <div style={{ maxHeight: 160, overflowY: "auto", border: "1px solid #eee", borderRadius: 8, padding: 8 }}>
+              {filteredUsers.length === 0 && (
+                <div style={{ color: "#888", fontSize: 14 }}>No users found.</div>
+              )}
+              {filteredUsers.map(u => (
+                <label key={u.id} style={{ display: "block", marginBottom: 4, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(u.id)}
+                    onChange={e => {
+                      if (e.target.checked) setSelectedUsers([...selectedUsers, u.id]);
+                      else setSelectedUsers(selectedUsers.filter(id => id !== u.id));
+                    }}
+                  />
+                  {" "}{u.displayName || u.email}
+                </label>
+              ))}
+            </div>
           </div>
         )}
-        <button onClick={sendAnnouncement} disabled={!message.trim()}>Send</button>
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={sendAnnouncement} disabled={!message.trim() || (recipientType === "specific" && selectedUsers.length === 0)} style={{ marginRight: 8 }}>
+          Send
+        </button>
+        <button onClick={onClose} style={{ background: "#e53935", color: "#fff" }}>
+          Cancel
+        </button>
       </div>
     </div>
   );

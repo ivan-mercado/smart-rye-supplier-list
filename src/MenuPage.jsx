@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
@@ -11,6 +11,12 @@ export default function MenuPage({ user }) {
 
   // State to control the Announcement modal
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+
+  // Animation state for main content
+  const [animateIn, setAnimateIn] = useState(false);
+  useEffect(() => {
+    setAnimateIn(true);
+  }, []);
 
   // Menu items for both roles
   const menuItems =
@@ -26,8 +32,7 @@ export default function MenuPage({ user }) {
           { label: "Exam", to: "/exams" },
           { label: "Attendance", to: "/attendance" },
         ];
-
-  // For bottom nav, only show up to 3 main actions
+          // For bottom nav, only show up to 3 main actions
   const bottomNavItems = user?.role === "admin"
     ? [
         menuItems[2], // Exam
@@ -40,7 +45,8 @@ export default function MenuPage({ user }) {
     await signOut(getAuth());
     navigate("/");
   };
-    return (
+
+  return (
     <div className="menu-modern-root">
       {/* Top App Bar */}
       <div className="menu-appbar">
@@ -98,43 +104,42 @@ export default function MenuPage({ user }) {
       <NotificationsBar user={user} setShowAnnouncementModal={setShowAnnouncementModal} />
 
       <div className="menu-banner-container">
-  {/* Replace the src with your actual banner GIF path */}
-  <img
-    src="/banner.gif"
-    alt="Banner"
-    className="menu-banner-gif"
-  />
-</div>
-            {/* Main Centered Content */}
+        {/* Replace the src with your actual banner GIF path */}
+        <img
+          src="/banner.gif"
+          alt="Banner"
+          className="menu-banner-gif"
+        />
+      </div>
+      {/* Main Centered Content */}
       <div className="menu-main-content">
-  <div className="menu-main-content-inner">
-    <div style={{ fontWeight: 800, fontSize: 28, color: '#1976d2', marginBottom: 16 }}>
-      Website Under Development
-    </div>
-    <div style={{ fontSize: 20, color: '#222', marginBottom: 24 }}>
-      This site is currently a work in progress.<br />
-      Features and content are being added by the developer.
-    </div>
-    <div style={{ fontSize: 17, color: '#888', marginBottom: 32 }}>
-      Thank you for your patience!
-    </div>
-    {/* New containers below */}
-    <div className="menu-extra-container">
-      <h3>Upcoming Features</h3>
-      <ul>
-        <li>Supplier Management</li>
-        <li>Exam Results Dashboard</li>
-        <li>Attendance Tracking</li>
-      </ul>
-    </div>
-    <div className="menu-extra-container">
-      <h3>Contact & Support</h3>
-      <p>For questions, email <a href="mailto:support@example.com">support@example.com</a></p>
-    </div>
-  </div>
-</div>
-
-      {/* Bottom Navigation for Mobile */}
+        <div className={`menu-main-content-inner${animateIn ? " menu-animate-in" : ""}`}>
+          <div style={{ fontWeight: 800, fontSize: 28, color: '#1976d2', marginBottom: 16 }}>
+            Website Under Development
+          </div>
+          <div style={{ fontSize: 20, color: '#222', marginBottom: 24 }}>
+            This site is currently a work in progress.<br />
+            Features and content are being added by the developer.
+          </div>
+          <div style={{ fontSize: 17, color: '#888', marginBottom: 32 }}>
+            Thank you for your patience!
+          </div>
+          {/* New containers below */}
+          <div className="menu-extra-container">
+            <h3>Upcoming Features</h3>
+            <ul>
+              <li>Supplier Management</li>
+              <li>Exam Results Dashboard</li>
+              <li>Attendance Tracking</li>
+            </ul>
+          </div>
+          <div className="menu-extra-container">
+            <h3>Contact & Support</h3>
+            <p>For questions, email <a href="mailto:support@example.com">support@example.com</a></p>
+          </div>
+        </div>
+      </div>
+            {/* Bottom Navigation for Mobile */}
       <nav className="menu-bottom-nav">
         {/* Email above logout in mobile nav */}
         {user?.email && (
@@ -144,17 +149,17 @@ export default function MenuPage({ user }) {
         )}
         <div className="menu-bottom-nav-links">
           {bottomNavItems.map((item, idx) => (
-  <Link
-    key={item.label + idx}
-    to={item.to}
-    className={
-      "menu-bottom-nav-link" +
-      (location.pathname === item.to ? " active" : "")
-    }
-  >
-    <div style={{ fontSize: "1rem", fontWeight: 700 }}>{item.label}</div>
-  </Link>
-))}
+            <Link
+              key={item.label + idx}
+              to={item.to}
+              className={
+                "menu-bottom-nav-link" +
+                (location.pathname === item.to ? " active" : "")
+              }
+            >
+              <div style={{ fontSize: "1rem", fontWeight: 700 }}>{item.label}</div>
+            </Link>
+          ))}
           <button
             className="menu-bottom-nav-link menu-bottom-nav-logout"
             onClick={handleLogout}
@@ -172,8 +177,8 @@ export default function MenuPage({ user }) {
         user={user}
       />
       {/* <footer className="menu-footer">
-  <span>© {new Date().getFullYear()} SmartRye Automatics. All Rights Reserved. &mdash; Web Design by Ivan Mercado</span>
-</footer> */}
+        <span>© {new Date().getFullYear()} SmartRye Automatics. All Rights Reserved. &mdash; Web Design by Ivan Mercado</span>
+      </footer> */}
     </div>
   );
 }
