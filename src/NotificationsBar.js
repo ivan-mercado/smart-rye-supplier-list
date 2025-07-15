@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "./firebase";
 import { FaBullhorn } from "react-icons/fa";
-import "./NotificationsBar.css"; // Import the CSS file for styling
+import "./NotificationsBar.css";
 import {
   collection,
   query,
@@ -17,6 +17,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
   const [notifications, setNotifications] = useState([]);
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const [activeNotif, setActiveNotif] = useState(null);
+  const [removingNotif, setRemovingNotif] = useState(null);
 
   // Real-time notifications
   useEffect(() => {
@@ -40,13 +41,19 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
     }
   };
 
+  // Animated remove
   const removeNotification = async (notifId) => {
-    try {
-      await deleteDoc(doc(db, "notifications", notifId));
-      setActiveNotif(null);
-    } catch (err) {
-      console.error("Failed to delete notification:", err);
-    }
+    setRemovingNotif(notifId);
+    setActiveNotif(null);
+    setTimeout(async () => {
+      try {
+        await deleteDoc(doc(db, "notifications", notifId));
+        setRemovingNotif(null);
+      } catch (err) {
+        console.error("Failed to delete notification:", err);
+        setRemovingNotif(null);
+      }
+    }, 350); // Match animation duration
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -93,6 +100,12 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
         .notif-item:hover, .notif-item:focus, .notif-item.active {
           background: #e3f0ff;
           box-shadow: 0 4px 16px #b0bec5;
+        }
+        .notif-item.removing {
+          opacity: 0;
+          transform: translateY(-30px) scale(0.95);
+          transition: opacity 0.35s, transform 0.35s;
+          pointer-events: none;
         }
         .notif-title {
           font-weight: 700;
@@ -210,6 +223,42 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
             display: none !important;
           }
         }
+        .mobile-announcement-bell-wrapper {
+          position: fixed;
+          right: 24px;
+          bottom: 150px;
+          z-index: 101;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 10px;
+        }
+        .mobile-announcement-btn {
+          background: #1976d2;
+          border: none;
+          border-radius: 50%;
+          box-shadow: 0 2px 8px #b3bfb6;
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+          cursor: pointer;
+          transition: background 0.18s;
+          font-size: 1.5rem;
+          margin-bottom: 10px;
+          padding: 0;
+        }
+        .mobile-announcement-btn:active,
+        .mobile-announcement-btn:focus {
+          background: #1565c0;
+        }
+        @media (min-width: 900px) {
+          .mobile-announcement-bell-wrapper {
+            display: none !important;
+          }
+        }
       `}</style>
 
       {/* Desktop sidebar */}
@@ -221,75 +270,70 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
         )}
         {notifications.map(notif => (
-  <div
-    key={notif.id}
-    className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}`}
-    onClick={() => {
-      setActiveNotif(notif.id);
-      markAsRead(notif.id);
-    }}
-    title={notif.read ? "Read" : "Unread"}
-    // REMOVE onBlur
-  >
-    <div className="notif-title">
-      {notif.type === "announcement" && "Announcement"}
-      {notif.type === "exam_assigned" && "New Exam Assigned"}
-      {notif.type === "exam_submitted" && "Exam Submitted"}
-    </div>
-    <div>
-      {notif.type === "announcement" && (
-    <>{notif.message}</>
-  )}
-      {notif.type === "exam_assigned" && (
-        <>You have been assigned <b>{notif.examTitle}</b>.</>
-      )}
-      {notif.type === "exam_submitted" && (
-        <><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>
-      )}
-    </div>
-    <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
-      {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
-    </div>
-    {activeNotif === notif.id && (
-      <button
-        className="notif-close-btn"
-        onClick={e => {
-          e.stopPropagation(); // Prevent parent click
-          removeNotification(notif.id);
-        }}
-        aria-label="Remove notification"
-      >
-        ×
-      </button>
-    )}
-  </div>
-))}
+          <div
+            key={notif.id}
+            className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}${removingNotif === notif.id ? " removing" : ""}`}
+            onClick={() => {
+              setActiveNotif(notif.id);
+              markAsRead(notif.id);
+            }}
+            title={notif.read ? "Read" : "Unread"}
+          >
+            <div className="notif-title">
+              {notif.type === "announcement" && "Announcement"}
+              {notif.type === "exam_assigned" && "New Exam Assigned"}
+              {notif.type === "exam_submitted" && "Exam Submitted"}
+            </div>
+            <div>
+              {notif.type === "announcement" && (<>{notif.message}</>)}
+              {notif.type === "exam_assigned" && (<>You have been assigned <b>{notif.examTitle}</b>.</>)}
+              {notif.type === "exam_submitted" && (<><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>)}
+            </div>
+            <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
+              {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
+            </div>
+            {activeNotif === notif.id && (
+              <button
+                className="notif-close-btn"
+                onClick={e => {
+                  e.stopPropagation();
+                  if (!removingNotif) removeNotification(notif.id);
+                }}
+                aria-label="Remove notification"
+                disabled={removingNotif === notif.id}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        ))}
       </div>
-      {/* Only show megaphone for admins */}
-{user?.role === "admin" && (
-  <div className="mobile-announcement-bell-wrapper">
-    <button
-      className="mobile-announcement-btn"
-      onClick={() => setShowAnnouncementModal(true)}
-      aria-label="Make Announcement"
-      type="button"
-    >
-      <FaBullhorn size={24} color="#fff" />
-    </button>
-  </div>
-)}
+            {/* Only show megaphone for admins */}
+      {user?.role === "admin" && (
+        <div className="mobile-announcement-bell-wrapper">
+          <button
+            className="mobile-announcement-btn"
+            onClick={() => setShowAnnouncementModal(true)}
+            aria-label="Make Announcement"
+            type="button"
+          >
+            <FaBullhorn size={24} color="#fff" />
+          </button>
+        </div>
+      )}
 
-{/* Always show bell for all users */}
-<div className="mobile-bell-wrapper">
-  <button className="notif-bell" onClick={() => setShowMobileDrawer(true)}>
-    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-      <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.278c0 .456-.186.893-.516 1.212A3.003 3.003 0 0 0 4 15v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-.828-.336-1.578-.884-2.11a1.75 1.75 0 0 1-.516-1.212V8a6 6 0 0 0-6-6Zm0 18a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z"/>
-    </svg>
-    {unreadCount > 0 && (
-      <span className="notif-bell-badge">{unreadCount}</span>
-    )}
-  </button>
-</div>
+      {/* Always show bell for all users */}
+      <div className="mobile-bell-wrapper">
+        <button className="notif-bell" onClick={() => setShowMobileDrawer(true)}>
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.278c0 .456-.186.893-.516 1.212A3.003 3.003 0 0 0 4 15v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-.828-.336-1.578-.884-2.11a1.75 1.75 0 0 1-.516-1.212V8a6 6 0 0 0-6-6Zm0 18a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z"/>
+          </svg>
+          {unreadCount > 0 && (
+            <span className="notif-bell-badge">{unreadCount}</span>
+          )}
+        </button>
+      </div>
+
       {/* Mobile notification drawer */}
       {showMobileDrawer && (
         <div className="notif-mobile-drawer">
@@ -301,49 +345,43 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
             <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
           )}
           {notifications.map(notif => (
-  <div
-    key={notif.id}
-    className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}`}
-    onClick={() => {
-      setActiveNotif(notif.id);
-      markAsRead(notif.id);
-    }}
-    title={notif.read ? "Read" : "Unread"}
-    // REMOVE onBlur
-  >
-    <div className="notif-title">
-  {notif.type === "announcement" && "Announcement"}
-  {notif.type === "exam_assigned" && "New Exam Assigned"}
-  {notif.type === "exam_submitted" && "Exam Submitted"}
-</div>
-<div>
-  {notif.type === "announcement" && (
-    <>{notif.message}</>
-  )}
-  {notif.type === "exam_assigned" && (
-    <>You have been assigned <b>{notif.examTitle}</b>.</>
-  )}
-  {notif.type === "exam_submitted" && (
-    <><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>
-  )}
-</div>
-    <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
-      {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
-    </div>
-    {activeNotif === notif.id && (
-      <button
-        className="notif-close-btn"
-        onClick={e => {
-          e.stopPropagation();
-          removeNotification(notif.id);
-        }}
-        aria-label="Remove notification"
-      >
-        ×
-      </button>
-    )}
-  </div>
-))}
+            <div
+              key={notif.id}
+              className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}${removingNotif === notif.id ? " removing" : ""}`}
+              onClick={() => {
+                setActiveNotif(notif.id);
+                markAsRead(notif.id);
+              }}
+              title={notif.read ? "Read" : "Unread"}
+            >
+              <div className="notif-title">
+                {notif.type === "announcement" && "Announcement"}
+                {notif.type === "exam_assigned" && "New Exam Assigned"}
+                {notif.type === "exam_submitted" && "Exam Submitted"}
+              </div>
+              <div>
+                {notif.type === "announcement" && (<>{notif.message}</>)}
+                {notif.type === "exam_assigned" && (<>You have been assigned <b>{notif.examTitle}</b>.</>)}
+                {notif.type === "exam_submitted" && (<><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>)}
+              </div>
+              <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
+                {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
+              </div>
+              {activeNotif === notif.id && (
+                <button
+                  className="notif-close-btn"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (!removingNotif) removeNotification(notif.id);
+                  }}
+                  aria-label="Remove notification"
+                  disabled={removingNotif === notif.id}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </>

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
 import AnnouncementModal from "./AnnouncementModal";
-import "./MenuPage.css"; // Import the CSS file for styling
+import "./MenuPage.css"; 
 
 export default function MenuPage({ user }) {
   const navigate = useNavigate();
@@ -104,7 +104,7 @@ export default function MenuPage({ user }) {
       <NotificationsBar user={user} setShowAnnouncementModal={setShowAnnouncementModal} />
 
       <div className="menu-banner-container">
-        {/* Replace the src with your actual banner GIF path */}
+        
         <img
           src="/banner.gif"
           alt="Banner"
@@ -135,7 +135,7 @@ export default function MenuPage({ user }) {
           </div>
           <div className="menu-extra-container">
             <h3>Contact & Support</h3>
-            <p>For questions, email <a href="mailto:support@example.com">support@example.com</a></p>
+            <p>For questions, email <a href="mailto:support@example.com"></a></p>
           </div>
         </div>
       </div>

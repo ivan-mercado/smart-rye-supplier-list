@@ -405,13 +405,13 @@
 
 .menu-main-content-inner {
   width: 100%;
+  min-height: 80vh;         /* or 100vh if you want it to always fill the screen */
   background: #fff;
-  border-radius: 28px;
-  box-shadow: 0 4px 32px #b3bfb633;
-  padding: 64px 80px 48px 80px; /* Increased left/right padding */
-  min-height: 480px;            /* Increased min-height */
-  max-width: 1200px;            /* Increased max-width */
-  margin: 0 auto;
+  border-radius: 0;         /* Remove rounded corners for a true infinite look */
+  box-shadow: none;         /* Remove shadow for a flat look */
+  padding: 64px 0 48px 0;   /* Remove side padding if you want edge-to-edge */
+  max-width: none;          /* Remove max-width restriction */
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
