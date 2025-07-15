@@ -135,7 +135,7 @@ export default function MenuPage({ user }) {
           </div>
           <div className="menu-extra-container">
             <h3>Contact & Support</h3>
-            <p>For questions, email <a href="mailto:support@example.com"></a></p>
+            <p>For questions, email <a href="mailto:support@example.com">ivankr.mercado@gmail.com</a></p>
           </div>
         </div>
       </div>
