@@ -179,8 +179,14 @@ export default function MenuPage({ user }) {
                 transition: "background 0.18s, color 0.18s",
                 outline: "none"
               }}
-              onMouseOver={e => (e.currentTarget.style.background = "#1976d2", e.currentTarget.style.color = "#fff")}
-              onMouseOut={e => (e.currentTarget.style.background = "#fff", e.currentTarget.style.color = "#1976d2")}
+              onMouseOver={e => {
+  e.currentTarget.style.background = "#1976d2";
+  e.currentTarget.style.color = "#fff";
+}}
+onMouseOut={e => {
+  e.currentTarget.style.background = "#fff";
+  e.currentTarget.style.color = "#1976d2";
+}}
             >
               SRA Website
             </a>
