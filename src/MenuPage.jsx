@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
-import { FaCheckCircle } from "react-icons/fa";
+// import { FaCheckCircle } from "react-icons/fa";
 import AnnouncementModal from "./AnnouncementModal";
 import "./MenuPage.css"; 
 
@@ -290,7 +290,7 @@ onMouseOut={e => {
   }}
   title="Workers Attendance"
 >
-  W 
+  {/* <FaCheckCircle /> */}W
 </button>
 </div>
       {/* Main Centered Content */}
