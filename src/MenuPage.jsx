@@ -284,7 +284,7 @@ onMouseOut={e => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 28,
+      fontSize: 32,
       marginBottom: 16,
       cursor: "pointer"
     }}
