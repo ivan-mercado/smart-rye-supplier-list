@@ -57,14 +57,14 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-    return (
+  return (
     <>
       <style>{`
         .notif-bar {
           position: fixed;
           top: 52px;
           right: 0;
-          width: 280px;
+          width: 180px;
           height: calc(100vh - 52px);
           background: #415256;
           color: #fff;
@@ -83,8 +83,10 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           color: #222;
           border-radius: 10px;
           margin: 10px 0;
-          padding: 12px 16px;
-          width: 220px;
+          padding: 12px 8px 12px 16px;
+          width: 100%;
+          min-width: 0;
+          max-width: 100%;
           box-shadow: 0 2px 8px #d7d7d7;
           font-size: 1rem;
           cursor: pointer;
@@ -92,6 +94,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           transition: background 0.18s, box-shadow 0.18s;
           position: relative;
           outline: none;
+          box-sizing: border-box;
         }
         .notif-item.unread {
           background: #e3f0ff;
@@ -137,6 +140,57 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           background: rgba(229,57,53,0.8);
           color: #fff;
         }
+        /* Projector styles */
+        .notif-projector-backdrop {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(30,40,60,0.25);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: notifProjectorFadeIn 0.25s;
+        }
+        @keyframes notifProjectorFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .notif-projector-card {
+          background: #fff;
+          color: #222;
+          border-radius: 18px;
+          box-shadow: 0 8px 32px #b0bec5cc;
+          min-width: 320px;
+          max-width: 95vw;
+          min-height: 120px;
+          padding: 32px 28px 24px 28px;
+          position: relative;
+          animation: notifProjectorPopIn 0.33s cubic-bezier(0.23, 1, 0.32, 1);
+          transform: scale(1);
+        }
+        @keyframes notifProjectorPopIn {
+          0% { opacity: 0; transform: scale(0.85) translateY(40px);}
+          100% { opacity: 1; transform: scale(1) translateY(0);}
+        }
+        .notif-projector-card-close {
+          position: absolute;
+          top: 12px;
+          right: 18px;
+          background: #e53935;
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          font-size: 1.5rem;
+          cursor: pointer;
+          box-shadow: 0 2px 8px #b0bec5;
+          transition: background 0.18s;
+        }
+        .notif-projector-card-close:hover {
+          background: #b71c1c;
+        }
+        /* Mobile bell and drawer */
         .notif-bell {
           position: fixed;
           bottom: 90px;
@@ -171,10 +225,17 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           font-weight: 700;
           box-shadow: 0 2px 8px #b0bec5;
         }
-        .notif-mobile-drawer {
+        .notif-mobile-backdrop {
           position: fixed;
-          bottom: 0;
-          left: 0;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(30,40,60,0.25);
+          z-index: 2000;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
+        }
+        .notif-mobile-drawer {
+          position: relative;
           width: 100vw;
           max-height: 70vh;
           background: #415256;
@@ -182,7 +243,6 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           border-top-left-radius: 18px;
           border-top-right-radius: 18px;
           box-shadow: 0 -4px 32px #b3bfb6;
-          z-index: 2000;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -219,7 +279,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           }
         }
         @media (min-width: 900px) {
-          .notif-bell, .notif-mobile-drawer {
+          .notif-bell, .notif-mobile-backdrop {
             display: none !important;
           }
         }
@@ -260,8 +320,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           }
         }
       `}</style>
-
-      {/* Desktop sidebar */}
+            {/* Desktop notification bar */}
       <div className="notif-bar">
         <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff" }}>
           Notifications
@@ -292,7 +351,7 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
             <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
               {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
             </div>
-            {activeNotif === notif.id && (
+            {/* {activeNotif === notif.id && (
               <button
                 className="notif-close-btn"
                 onClick={e => {
@@ -304,11 +363,11 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
               >
                 ×
               </button>
-            )}
+            )} */}
           </div>
         ))}
       </div>
-            {/* Only show megaphone for admins */}
+      {/* Only show megaphone for admins */}
       {user?.role === "admin" && (
         <div className="mobile-announcement-bell-wrapper">
           <button
@@ -322,8 +381,8 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
         </div>
       )}
 
-      {/* Always show bell for all users */}
-      <div className="mobile-bell-wrapper">
+      {/* Mobile bell (only on mobile, not desktop) */}
+      {!showMobileDrawer && (
         <button className="notif-bell" onClick={() => setShowMobileDrawer(true)}>
           <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
             <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.278c0 .456-.186.893-.516 1.212A3.003 3.003 0 0 0 4 15v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-.828-.336-1.578-.884-2.11a1.75 1.75 0 0 1-.516-1.212V8a6 6 0 0 0-6-6Zm0 18a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z"/>
@@ -332,56 +391,101 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
             <span className="notif-bell-badge">{unreadCount}</span>
           )}
         </button>
-      </div>
+      )}
 
-      {/* Mobile notification drawer */}
+      {/* Mobile notification drawer with backdrop */}
       {showMobileDrawer && (
-        <div className="notif-mobile-drawer">
-          <button className="notif-mobile-close" onClick={() => setShowMobileDrawer(false)}>&times;</button>
-          <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff" }}>
-            Notifications
+        <div className="notif-mobile-backdrop" onClick={() => setShowMobileDrawer(false)}>
+          <div className="notif-mobile-drawer" onClick={e => e.stopPropagation()}>
+            <button className="notif-mobile-close" onClick={() => setShowMobileDrawer(false)}>&times;</button>
+            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff" }}>
+              Notifications
+            </div>
+            {notifications.length === 0 && (
+              <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
+            )}
+            {notifications.map(notif => (
+              <div
+                key={notif.id}
+                className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}${removingNotif === notif.id ? " removing" : ""}`}
+                onClick={() => {
+                  setActiveNotif(notif.id);
+                  markAsRead(notif.id);
+                }}
+                title={notif.read ? "Read" : "Unread"}
+              >
+                <div className="notif-title">
+                  {notif.type === "announcement" && "Announcement"}
+                  {notif.type === "exam_assigned" && "New Exam Assigned"}
+                  {notif.type === "exam_submitted" && "Exam Submitted"}
+                </div>
+                <div>
+                  {notif.type === "announcement" && (<>{notif.message}</>)}
+                  {notif.type === "exam_assigned" && (<>You have been assigned <b>{notif.examTitle}</b>.</>)}
+                  {notif.type === "exam_submitted" && (<><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>)}
+                </div>
+                <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
+                  {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
+                </div>
+                {/* {activeNotif === notif.id && (
+                  <button
+                    className="notif-close-btn"
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (!removingNotif) removeNotification(notif.id);
+                    }}
+                    aria-label="Remove notification"
+                    disabled={removingNotif === notif.id}
+                  >
+                    ×
+                  </button>
+                )} */}
+              </div>
+            ))}
           </div>
-          {notifications.length === 0 && (
-            <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
-          )}
-          {notifications.map(notif => (
-            <div
-              key={notif.id}
-              className={`notif-item${notif.read ? "" : " unread"}${activeNotif === notif.id ? " active" : ""}${removingNotif === notif.id ? " removing" : ""}`}
-              onClick={() => {
-                setActiveNotif(notif.id);
-                markAsRead(notif.id);
-              }}
-              title={notif.read ? "Read" : "Unread"}
-            >
-              <div className="notif-title">
-                {notif.type === "announcement" && "Announcement"}
-                {notif.type === "exam_assigned" && "New Exam Assigned"}
-                {notif.type === "exam_submitted" && "Exam Submitted"}
-              </div>
-              <div>
-                {notif.type === "announcement" && (<>{notif.message}</>)}
-                {notif.type === "exam_assigned" && (<>You have been assigned <b>{notif.examTitle}</b>.</>)}
-                {notif.type === "exam_submitted" && (<><b>{notif.fromUserName}</b> submitted <b>{notif.examTitle}</b>.</>)}
-              </div>
-              <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
-                {notif.timestamp?.toDate?.().toLocaleString?.() || ""}
-              </div>
-              {activeNotif === notif.id && (
-                <button
-                  className="notif-close-btn"
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (!removingNotif) removeNotification(notif.id);
-                  }}
-                  aria-label="Remove notification"
-                  disabled={removingNotif === notif.id}
-                >
-                  ×
-                </button>
+        </div>
+      )}
+            {/* Projector Modal */}
+      {activeNotif && (
+        <div
+          className="notif-projector-backdrop"
+          onClick={() => setActiveNotif(null)}
+        >
+          <div
+            className="notif-projector-card"
+            onClick={e => e.stopPropagation()}
+            tabIndex={-1}
+          >
+            <button
+  className="notif-projector-card-close"
+  onClick={() => {
+    if (!removingNotif) removeNotification(activeNotif);
+  }}
+  aria-label="Delete notification"
+  disabled={removingNotif === activeNotif}
+>
+  ×
+</button>
+            <div className="notif-title" style={{ fontSize: 22, marginBottom: 10 }}>
+              {notifications.find(n => n.id === activeNotif)?.type === "announcement" && "Announcement"}
+              {notifications.find(n => n.id === activeNotif)?.type === "exam_assigned" && "New Exam Assigned"}
+              {notifications.find(n => n.id === activeNotif)?.type === "exam_submitted" && "Exam Submitted"}
+            </div>
+            <div style={{ fontSize: 17, marginBottom: 10 }}>
+              {notifications.find(n => n.id === activeNotif)?.type === "announcement" && (
+                <>{notifications.find(n => n.id === activeNotif)?.message}</>
+              )}
+              {notifications.find(n => n.id === activeNotif)?.type === "exam_assigned" && (
+                <>You have been assigned <b>{notifications.find(n => n.id === activeNotif)?.examTitle}</b>.</>
+              )}
+              {notifications.find(n => n.id === activeNotif)?.type === "exam_submitted" && (
+                <><b>{notifications.find(n => n.id === activeNotif)?.fromUserName}</b> submitted <b>{notifications.find(n => n.id === activeNotif)?.examTitle}</b>.</>
               )}
             </div>
-          ))}
+            <div style={{ color: "#888", fontSize: 14, marginTop: 8 }}>
+              {notifications.find(n => n.id === activeNotif)?.timestamp?.toDate?.().toLocaleString?.() || ""}
+            </div>
+          </div>
         </div>
       )}
     </>

@@ -7,9 +7,12 @@ import TakeExamPage from './TakeExamPage';
 import UploadResumePage from './UploadResumePage';
 import ResumesPage from './ResumesPage';
 import UserAttendancePage from './UserAttendancePage';
+import { Navigate } from "react-router-dom";
+import WorkersAttendanceAdminPage from './WorkersAttendanceAdminPage';
 import AdminAttendanceDashboard from './AdminAttendanceDashboard';
 import OJTAttendancePage from './OJTAttendancePage';
 import DepartmentSelectModal from './DepartmentSelectModal';
+import WorkersAttendancePage from './WorkersAttendancePage';
 import ResultsPage from './ResultsPage';
 import ExamsPage from './ExamsPage';
 import {
@@ -1065,6 +1068,22 @@ function App() {
         } />
         <Route path="/" element={<MenuPage user={user} />} />
         <Route path="/attendance" element={<UserAttendancePage user={user} />} />
+        <Route
+  path="/workers-attendance"
+  element={
+    user?.role === "admin"
+      ? <Navigate to="/workers-attendance-admin" replace />
+      : <WorkersAttendancePage user={user} />
+  }
+/>
+<Route
+  path="/workers-attendance-admin"
+  element={
+    user?.role === "admin"
+      ? <WorkersAttendanceAdminPage user={user} />
+      : <Navigate to="/workers-attendance" replace />
+  }
+/>
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
         <Route path="/results" element={<ResultsPage user={user} />} />
         <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />

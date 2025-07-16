@@ -32,7 +32,7 @@ export default function MenuPage({ user }) {
           { label: "Exam", to: "/exams" },
           { label: "Attendance", to: "/attendance" },
         ];
-          // For bottom nav, only show up to 3 main actions
+  // For bottom nav, only show up to 3 main actions
   const bottomNavItems = user?.role === "admin"
     ? [
         menuItems[2], // Exam
@@ -45,8 +45,7 @@ export default function MenuPage({ user }) {
     await signOut(getAuth());
     navigate("/");
   };
-
-  return (
+    return (
     <div className="menu-modern-root">
       {/* Top App Bar */}
       <div className="menu-appbar">
@@ -77,6 +76,24 @@ export default function MenuPage({ user }) {
             Announcement
           </button>
         )}
+        {/* Workers Attendance link for both roles */}
+        {user?.role === "admin" ? (
+          <Link
+            to="/workers-attendance-admin"
+            className="menu-sidebar-link"
+            style={{ marginTop: 10 }}
+          >
+            Workers Attendance (Admin)
+          </Link>
+        ) : (
+          <Link
+            to="/workers-attendance"
+            className="menu-sidebar-link"
+            style={{ marginTop: 10 }}
+          >
+            Workers Attendance
+          </Link>
+        )}
         <div style={{ flexGrow: 1 }} />
         {user?.department && (
           <div className="menu-sidebar-department" style={{
@@ -102,14 +119,139 @@ export default function MenuPage({ user }) {
         </button>
       </div>
       <NotificationsBar user={user} setShowAnnouncementModal={setShowAnnouncementModal} />
-
-      <div className="menu-banner-container">
-        
-        <img
-          src="/banner.gif"
-          alt="Banner"
-          className="menu-banner-gif"
-        />
+            {/* Redesigned Welcome Card */}
+      <div
+        style={{
+          margin: "32px auto 32px auto",
+          maxWidth: 1200,
+          borderRadius: 16,
+          boxShadow: "0 2px 16px #b3bfb633",
+          background: "#fff",
+          padding: "0 0 24px 0",
+          border: "1.5px solid #eee"
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: 24,
+            color: "#b71c1c",
+            padding: "18px 32px 10px 32px",
+            borderBottom: "1px solid #eee",
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            background: "#fff"
+          }}
+        >
+          Welcome to Smart Rye Business Management System
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            background: "#415256",
+            borderBottomLeftRadius: 16,
+            borderBottomRightRadius: 16,
+            padding: "32px 24px",
+            gap: 32,
+            minHeight: 220,
+            justifyContent: "space-between"
+          }}
+        >
+          {/* Left: Button */}
+          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <a
+              href="https://www.smartrye.com.ph/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                background: "#fff",
+                color: "#1976d2",
+                fontWeight: 700,
+                fontSize: 18,
+                borderRadius: 22,
+                padding: "12px 32px",
+                textDecoration: "none",
+                boxShadow: "0 2px 8px #b0bec5",
+                border: "none",
+                transition: "background 0.18s, color 0.18s",
+                outline: "none"
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = "#1976d2", e.currentTarget.style.color = "#fff")}
+              onMouseOut={e => (e.currentTarget.style.background = "#fff", e.currentTarget.style.color = "#1976d2")}
+            >
+              SRA Website
+            </a>
+          </div>
+          {/* Right: Banner */}
+          <div style={{ flex: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <img
+              src="/banner.gif"
+              alt="Smart Rye Banner"
+              style={{
+                maxWidth: "100%",
+                maxHeight: 105,
+                borderRadius: 12,
+                objectFit: "contain",
+                background: "#fff",
+                boxShadow: "0 2px 8px #b0bec5"
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      {/* Three Info Containers Below Banner */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'stretch',
+        gap: 32,
+        margin: '32px 0 0 0',
+        width: '100%',
+        maxWidth: 1100,
+        flexWrap: 'wrap'
+      }}>
+        <div style={{
+          flex: 1,
+          minWidth: 220,
+          background: '#fff',
+          borderRadius: 14,
+          boxShadow: '0 2px 12px #b0bec533',
+          padding: '28px 20px',
+          textAlign: 'center',
+          border: '1.5px solid #e3e8f7'
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: '#1976d2', marginBottom: 8 }}>Quick Stats</div>
+          <div style={{ fontSize: 16, color: '#444' }}>Exams: 2<br />Attendance: 100%</div>
+        </div>
+        <div style={{
+          flex: 1,
+          minWidth: 220,
+          background: '#fff',
+          borderRadius: 14,
+          boxShadow: '0 2px 12px #b0bec533',
+          padding: '28px 20px',
+          textAlign: 'center',
+          border: '1.5px solid #e3e8f7'
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: '#1976d2', marginBottom: 8 }}>Reminders</div>
+          <div style={{ fontSize: 16, color: '#444' }}>Check your exam schedule regularly.</div>
+        </div>
+        <div style={{
+          flex: 1,
+          minWidth: 220,
+          background: '#fff',
+          borderRadius: 14,
+          boxShadow: '0 2px 12px #b0bec533',
+          padding: '28px 20px',
+          textAlign: 'center',
+          border: '1.5px solid #e3e8f7'
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: '#1976d2', marginBottom: 8 }}>Support</div>
+          <div style={{ fontSize: 16, color: '#444' }}>Need help? <br />Contact support anytime.</div>
+        </div>
       </div>
       {/* Main Centered Content */}
       <div className="menu-main-content">
@@ -139,7 +281,7 @@ export default function MenuPage({ user }) {
           </div>
         </div>
       </div>
-            {/* Bottom Navigation for Mobile */}
+      {/* Bottom Navigation for Mobile */}
       <nav className="menu-bottom-nav">
         {/* Email above logout in mobile nav */}
         {user?.email && (
