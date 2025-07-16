@@ -290,7 +290,7 @@ onMouseOut={e => {
   }}
   title="Workers Attendance"
 >
-  <FaCheckCircle />
+  W 
 </button>
 </div>
       {/* Main Centered Content */}
