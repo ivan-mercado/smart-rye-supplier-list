@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
+import { FaUserCog } from "react-icons/fa";
 import AnnouncementModal from "./AnnouncementModal";
 import "./MenuPage.css"; 
 
@@ -259,6 +260,39 @@ onMouseOut={e => {
           <div style={{ fontSize: 16, color: '#444' }}>Need help? <br />Contact support anytime.</div>
         </div>
       </div>
+      {/* Floating Worker Attendance FAB (mobile only) */}
+<div
+  className="fab-worker-attendance"
+  style={{
+    position: "fixed",
+    right: 24,
+    bottom: 215, // adjust as needed to stack above other FABs
+    zIndex: 100,
+    display: "block"
+  }}
+>
+  <button
+    onClick={() => navigate(user?.role === "admin" ? "/workers-attendance-admin" : "/workers-attendance")}
+    style={{
+      width: 56,
+      height: 56,
+      borderRadius: "50%",
+      background: "#1976d2",
+      color: "#fff",
+      border: "none",
+      boxShadow: "0 2px 8px #b0bec5",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 28,
+      marginBottom: 16,
+      cursor: "pointer"
+    }}
+    title="Workers Attendance"
+  >
+    <FaUserCog />
+  </button>
+</div>
       {/* Main Centered Content */}
       <div className="menu-main-content">
         <div className={`menu-main-content-inner${animateIn ? " menu-animate-in" : ""}`}>
