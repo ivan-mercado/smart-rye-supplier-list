@@ -18,6 +18,9 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const [activeNotif, setActiveNotif] = useState(null);
   const [removingNotif, setRemovingNotif] = useState(null);
+  const [showConfirmClear, setShowConfirmClear] = useState(false);
+  
+
 
   // Real-time notifications
   useEffect(() => {
@@ -55,6 +58,20 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
       }
     }, 350); // Match animation duration
   };
+
+  const clearAllNotifications = async () => {
+  const promises = notifications.map((notif) =>
+    deleteDoc(doc(db, "notifications", notif.id))
+  );
+  try {
+    await Promise.all(promises);
+    setActiveNotif(null);
+    setRemovingNotif(null);
+  } catch (err) {
+    console.error("Failed to clear all notifications:", err);
+  }
+};
+
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   return (
@@ -322,9 +339,36 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
       `}</style>
             {/* Desktop notification bar */}
       <div className="notif-bar">
-        <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff" }}>
-          Notifications
-        </div>
+        <div style={{ 
+  fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff", 
+  display: "flex", justifyContent: "space-between", alignItems: "center", width: "90%"
+}}>
+  <span>Notifications</span>
+  {notifications.length > 0 && (
+    <button
+  onClick={() => {
+    setShowConfirmClear(true);
+
+  }}
+  title="Clear all notifications"
+  style={{
+    background: "none",
+    border: "none",
+    color: "#ff9999",
+    fontSize: "20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    lineHeight: "1",
+    padding: 0,
+    marginLeft: 8
+  }}
+>
+  ×
+</button>
+
+  )}
+</div>
+
         {notifications.length === 0 && (
           <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
         )}
@@ -397,10 +441,38 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
       {showMobileDrawer && (
         <div className="notif-mobile-backdrop" onClick={() => setShowMobileDrawer(false)}>
           <div className="notif-mobile-drawer" onClick={e => e.stopPropagation()}>
-            <button className="notif-mobile-close" onClick={() => setShowMobileDrawer(false)}>&times;</button>
-            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff" }}>
-              Notifications
-            </div>
+            {/* <button className="notif-mobile-close" onClick={() => setShowMobileDrawer(false)}>&times;</button> */}
+            <div style={{
+  fontWeight: 800, fontSize: 18, marginBottom: 10, color: "#fff",
+  display: "flex", justifyContent: "space-between", alignItems: "center",
+  width: "90%"
+}}>
+  <span>Notifications</span>
+  {notifications.length > 0 && (
+    <button
+  onClick={() => {
+    setShowConfirmClear(true);
+
+  }}
+  title="Clear all notifications"
+  style={{
+    background: "none",
+    border: "none",
+    color: "#ff9999",
+    fontSize: "20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    lineHeight: "1",
+    padding: 0,
+    marginLeft: 8
+  }}
+>
+  Clear All
+</button>
+
+  )}
+</div>
+
             {notifications.length === 0 && (
               <div style={{ color: "#b0bec5", fontSize: 15, marginTop: 20 }}>No notifications yet.</div>
             )}
@@ -488,6 +560,64 @@ export default function NotificationsBar({ user, setShowAnnouncementModal }) {
           </div>
         </div>
       )}
+      {showConfirmClear && (
+  <div className="notif-projector-backdrop" onClick={() => setShowConfirmClear(false)}>
+    <div
+  className="notif-projector-card"
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    padding: "24px 28px",
+    width: "100%",
+    maxWidth: "400px",
+    background: "#fff",
+    borderRadius: "12px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+    position: "relative",
+    margin: "0 16px",
+  }}
+>
+
+      <h3 style={{ marginBottom: 20 }}>Clear All Notifications?</h3>
+      <p style={{ marginBottom: 24 }}>
+        Are you sure you want to delete all your notifications? This action cannot be undone.
+      </p>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+        <button
+          style={{
+            padding: "8px 16px",
+            background: "#e0e0e0",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontWeight: 600
+          }}
+          onClick={() => setShowConfirmClear(false)}
+        >
+          Cancel
+        </button>
+        <button
+          style={{
+            padding: "8px 16px",
+            background: "#d32f2f",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontWeight: 600
+          }}
+          onClick={async () => {
+            await clearAllNotifications();
+            setShowConfirmClear(false);
+          }}
+        >
+          Yes, Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </>
   );
 }
