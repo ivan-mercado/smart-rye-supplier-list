@@ -20,27 +20,46 @@ export default function MenuPage({ user }) {
   }, []);
 
   // Menu items for both roles
-  const menuItems =
-    user?.role === "admin"
-      ? [
-          { label: "Add", to: "/add" },
-          { label: "Suppliers", to: "/list" },
-          { label: "Exam", to: "/exams" },
-          { label: "Results", to: "/results" },
-          { label: "Attendance", to: "/attendance" },
-        ]
-      : [
-          { label: "Exam", to: "/exams" },
-          { label: "Attendance", to: "/attendance" },
-        ];
-  // For bottom nav, only show up to 3 main actions
-  const bottomNavItems = user?.role === "admin"
-    ? [
-        menuItems[2], // Exam
-        menuItems[3], // Results
-        menuItems[4], // Attendance
-      ]
-    : menuItems.slice(0, 3);
+  const menuItems = [];
+
+// Show Add & Suppliers only if in Purchasing department
+if (user?.department === "Purchasing") {
+  menuItems.push({ label: "Add", to: "/add" });
+  menuItems.push({ label: "Suppliers", to: "/list" });
+}
+
+// Show "Exam" to:
+// - Applicants (regular users)
+// - HR Admins
+if (
+  (user?.department === "Applicant") ||
+  (user?.role === "admin" && user?.department === "Human Resource")
+) {
+  menuItems.push({ label: "Exam", to: "/exams" });
+}
+
+
+// "Attendance" visible only to:
+// - OJT users
+// - HR admins
+if (
+  (user?.role !== "admin" && user?.department === "OJT") ||
+  (user?.role === "admin" && user?.department === "Human Resource")
+) {
+  menuItems.push({ label: "Attendance", to: "/attendance" });
+}
+
+
+
+// Only admins can see Results
+if (user?.role === "admin") {
+  menuItems.push({ label: "Results", to: "/results" });
+}
+
+// Limit bottom nav to first 3 items
+const bottomNavItems = menuItems.slice(0, 3);
+
+
 
   const handleLogout = async () => {
     await signOut(getAuth());
@@ -78,23 +97,27 @@ export default function MenuPage({ user }) {
           </button>
         )}
         {/* Workers Attendance link for both roles */}
-        {user?.role === "admin" ? (
-          <Link
-            to="/workers-attendance-admin"
-            className="menu-sidebar-link"
-            style={{ marginTop: 10 }}
-          >
-            Workers Attendance (Admin)
-          </Link>
-        ) : (
-          <Link
-            to="/workers-attendance"
-            className="menu-sidebar-link"
-            style={{ marginTop: 10 }}
-          >
-            Workers Attendance
-          </Link>
-        )}
+        {user?.role !== "admin" && user?.department === "Tool Room" && (
+  <Link
+    to="/workers-attendance"
+    className="menu-sidebar-link"
+    style={{ marginTop: 10 }}
+  >
+    Workers Attendance
+  </Link>
+)}
+
+{user?.role === "admin" && user?.department === "Human Resource" && (
+  <Link
+    to="/workers-attendance-admin"
+    className="menu-sidebar-link"
+    style={{ marginTop: 10 }}
+  >
+    Workers Attendance (Admin)
+  </Link>
+)}
+
+
         <div style={{ flexGrow: 1 }} />
         {user?.department && (
           <div className="menu-sidebar-department" style={{
@@ -261,38 +284,47 @@ onMouseOut={e => {
         </div>
       </div>
       {/* Floating Worker Attendance FAB (mobile only) */}
-<div
-  className="fab-worker-attendance"
-  style={{
-    position: "fixed",
-    right: 24,
-    bottom: 215, // adjust as needed to stack above other FABs
-    zIndex: 100,
-    display: "block"
-  }}
->
-  <button
-  onClick={() => navigate(user?.role === "admin" ? "/workers-attendance-admin" : "/workers-attendance")}
-  style={{
-    width: 56,
-    height: 56,
-    borderRadius: "50%",
-    background: "#1976d2",
-    color: "#fff",
-    border: "none",
-    boxShadow: "0 2px 8px #b0bec5",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 28,
-    marginBottom: 16,
-    cursor: "pointer"
-  }}
-  title="Workers Attendance"
->
-  {/* <FaCheckCircle /> */}W
-</button>
-</div>
+{(user?.role !== "admin" && user?.department === "Tool Room") ||
+ (user?.role === "admin" && user?.department === "Human Resource") ? (
+  <div
+    className="fab-worker-attendance"
+    style={{
+      position: "fixed",
+      right: 24,
+      bottom: 215,
+      zIndex: 100
+    }}
+  >
+    <button
+      onClick={() => {
+        if (user?.role !== "admin" && user?.department === "Tool Room") {
+          navigate("/workers-attendance");
+        } else if (user?.role === "admin" && user?.department === "Human Resource") {
+          navigate("/workers-attendance-admin");
+        }
+      }}
+      style={{
+        width: 56,
+        height: 56,
+        borderRadius: "50%",
+        background: "#1976d2",
+        color: "#fff",
+        border: "none",
+        boxShadow: "0 2px 8px #b0bec5",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 28,
+        marginBottom: 16,
+        cursor: "pointer"
+      }}
+      title="Workers Attendance"
+    >
+      W
+    </button>
+  </div>
+) : null}
+
       {/* Main Centered Content */}
       <div className="menu-main-content">
         <div className={`menu-main-content-inner${animateIn ? " menu-animate-in" : ""}`}>

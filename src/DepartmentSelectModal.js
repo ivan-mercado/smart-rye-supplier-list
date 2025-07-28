@@ -8,6 +8,7 @@ const DEPARTMENTS = [
   "Purchasing",
   "OJT",
   "Applicant",
+  "Tool Room",
   "Other"
 ];
 

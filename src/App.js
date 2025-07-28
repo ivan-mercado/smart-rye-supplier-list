@@ -578,7 +578,7 @@ function AuthForm({ onAuth }) {
               marginBottom: 2,
             }}
           >
-            Application developed by
+            System developed by
           </span>
           Ivan Mercado,{" "}
           <span style={{ color: "#4f8cff", fontWeight: 700 }}>BSCpE</span>
