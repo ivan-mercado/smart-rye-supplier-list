@@ -25,6 +25,8 @@ export default function WorkersAttendanceAdminPage() {
   const [editingVehicleName, setEditingVehicleName] = useState("");
   const [showWorkers, setShowWorkers] = useState(false);
   const [showVehicles, setShowVehicles] = useState(false);
+  const [searchWorker, setSearchWorker] = useState("");
+
 
   // Edit attendance state
   const [editingAttendanceId, setEditingAttendanceId] = useState(null);
@@ -214,8 +216,25 @@ const handleSaveAsPicture = async (id, date) => {
               />
               <button onClick={handleAddWorker} style={{ background: "#43a047", color: "#fff", border: "none", borderRadius: 6, padding: "6px 16px", fontWeight: 700 }}>Add</button>
             </div>
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {workers.map(w =>
+            <input
+  type="text"
+  placeholder="Search worker..."
+  value={searchWorker}
+  onChange={(e) => setSearchWorker(e.target.value)}
+  style={{
+    width: "228px",
+    padding: 6,
+    borderRadius: 6,
+    border: "1px solid #b0bec5",
+    marginBottom: 10,
+  }}
+/>
+
+<ul style={{ listStyle: "none", padding: 0 }}>
+  {workers
+    .filter(w => w.name.toLowerCase().includes(searchWorker.toLowerCase()))
+    .map(w =>
+
                 <li key={w.id} style={{ marginBottom: 6 }}>
                   {editingWorker === w.id ? (
                     <>
