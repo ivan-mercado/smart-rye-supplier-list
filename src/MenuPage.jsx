@@ -316,6 +316,8 @@ onMouseOut={e => {
         alignItems: "center",
         justifyContent: "center",
         fontSize: 28,
+        fontFamily: "inherit",  // 👈 Fix for iOS
+        lineHeight: 1,           // 👈 Fix for iOS
         marginBottom: 16,
         cursor: "pointer"
       }}
