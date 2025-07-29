@@ -171,7 +171,7 @@ export default function WorkersAttendanceUserPage({ user }) {
                   type="text"
                   value={site.clientName}
                   onChange={e => updateSite(idx, "clientName", e.target.value)}
-                  placeholder="Enter client name"
+                  placeholder="n/a if not applicable"
                   style={{ marginLeft: 8, padding: 4, borderRadius: 6, border: "1px solid #b0bec5", width: "60%", fontSize: "16px" }}
                   required
                 />
