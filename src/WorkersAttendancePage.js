@@ -171,7 +171,7 @@ export default function WorkersAttendanceUserPage({ user }) {
                   type="text"
                   value={site.clientName}
                   onChange={e => updateSite(idx, "clientName", e.target.value)}
-                  placeholder="n/a if not applicable"
+                  placeholder="Enter client name"
                   style={{ marginLeft: 8, padding: 4, borderRadius: 6, border: "1px solid #b0bec5", width: "60%", fontSize: "16px" }}
                   required
                 />
@@ -224,7 +224,7 @@ export default function WorkersAttendanceUserPage({ user }) {
                   type="text"
                   value={fab.clientName}
                   onChange={e => updateFabrication(idx, "clientName", e.target.value)}
-                  placeholder="Enter client name"
+                  placeholder="n/a if not applicable"
                   style={{ marginLeft: 8, padding: 4, borderRadius: 6, border: "1px solid #b0bec5", width: "60%", fontSize: "16px" }}
                   required
                 />
@@ -310,7 +310,7 @@ export default function WorkersAttendanceUserPage({ user }) {
             type="text"
             value={addOns}
             onChange={e => setAddOns(e.target.value)}
-            placeholder="Enter add-ons here..."
+            placeholder="n/a if not applicable"
             style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #b0bec5", fontSize: "16px" }}
           />
         </div>
