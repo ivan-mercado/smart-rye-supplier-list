@@ -4,6 +4,7 @@ import { getAuth, signOut } from "firebase/auth";
 import NotificationsBar from "./NotificationsBar";
 // import { FaCheckCircle } from "react-icons/fa";
 import AnnouncementModal from "./AnnouncementModal";
+import { FaHardHat } from "react-icons/fa";
 import "./MenuPage.css"; 
 
 export default function MenuPage({ user }) {
@@ -320,7 +321,7 @@ onMouseOut={e => {
       }}
       title="Workers Attendance"
     >
-      W
+      <FaHardHat />
     </button>
   </div>
 ) : null}

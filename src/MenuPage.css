@@ -172,9 +172,9 @@
   color: #fff !important;
 }
 .menu-bottom-nav-logout {
-  color: #e53935 !important;
-  background: #fff !important;
-  border: 2px solid #e53935;
+  color: #fff !important;
+  background: #e53935 !important;
+  border: 2px solid #a32e2c;
   font-weight: 800;
 }
 .menu-bottom-nav-logout:focus,
