@@ -36,3 +36,22 @@
     display: none !important;
   }
 }
+
+/* july 29 */
+
+.notif-bar {
+  position: fixed;
+  top: 52px;
+  right: 0;
+  width: 180px;
+  height: calc(100vh - 52px);
+  background: #415256;
+  color: #fff;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.notif-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Edge */
+}

@@ -359,14 +359,17 @@
 }
 
 .menu-main-content {
-  position: relative;
-  margin: 48px 300px 48px 200px; /* top, right, bottom, left */
-  /* left: sidebar width + some gap, right: notif bar width + some gap */
-  min-height: 60vh;
+  width: 100%;
+  max-width: 1000px;
+  margin: 48px auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 60vh;
+  box-sizing: border-box;
 }
+
 
 @media (max-width: 1199px) {
   .menu-main-content {

@@ -151,7 +151,7 @@ const bottomNavItems = menuItems.slice(0, 3);
           borderRadius: 16,
           boxShadow: "0 2px 16px #b3bfb633",
           background: "#fff",
-          padding: "0 0 24px 0",
+          padding: "0 0 1px 0",
           border: "1.5px solid #eee"
         }}
       >
