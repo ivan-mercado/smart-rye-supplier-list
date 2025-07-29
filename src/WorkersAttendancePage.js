@@ -15,6 +15,8 @@ export default function WorkersAttendanceUserPage({ user }) {
   const [addOns, setAddOns] = useState("");
   const [loading, setLoading] = useState(false);
   const [submittedToday, setSubmittedToday] = useState(false);
+  const [submittedData, setSubmittedData] = useState(null);
+
 
   // Fetch workers list from Firestore
   useEffect(() => {
@@ -40,14 +42,18 @@ export default function WorkersAttendanceUserPage({ user }) {
   // Check if user already submitted today
   useEffect(() => {
     async function checkSubmitted() {
-      const q = query(
-        collection(db, "workers_attendance"),
-        where("userId", "==", user.uid),
-        where("date", "==", today)
-      );
-      const snap = await getDocs(q);
-      setSubmittedToday(!snap.empty);
-    }
+  const q = query(
+    collection(db, "workers_attendance"),
+    where("userId", "==", user.uid),
+    where("date", "==", today)
+  );
+  const snap = await getDocs(q);
+  if (!snap.empty) {
+    setSubmittedToday(true);
+    setSubmittedData(snap.docs[0].data());
+  }
+}
+
     checkSubmitted();
     // eslint-disable-next-line
   }, [user.uid, today]);
@@ -60,12 +66,24 @@ export default function WorkersAttendanceUserPage({ user }) {
     setSites(updated);
   };
 
+  const removeSite = (idx) => {
+  const updated = [...sites];
+  updated.splice(idx, 1);
+  setSites(updated);
+};
+
   const addFabrication = () => setFabrications([...fabrications, { clientName: "", location: "", workers: [] }]);
   const updateFabrication = (idx, field, value) => {
     const updated = [...fabrications];
     updated[idx][field] = value;
     setFabrications(updated);
   };
+
+  const removeFabrication = (idx) => {
+  const updated = [...fabrications];
+  updated.splice(idx, 1);
+  setFabrications(updated);
+};
 
   // Get all selected workers in all categories except add-ons
   const getAllSelectedWorkers = (exclude = {}) => {
@@ -146,25 +164,192 @@ export default function WorkersAttendanceUserPage({ user }) {
       <h2 style={{ color: "#1976d2", fontWeight: 800, marginBottom: 8 }}>Workers Attendance</h2>
       <div style={{ color: "#888", marginBottom: 24 }}>{today}</div>
       {submittedToday ? (
-        <div style={{
-          color: "#43a047",
-          fontWeight: 700,
-          fontSize: 22,
-          textAlign: "center",
-          margin: "48px 0"
-        }}>
-          You have already submitted your attendance for today.<br />
-          <span style={{ color: "#1976d2" }}>Come back again tomorrow!</span>
-        </div>
+        <div style={{ color: "#43a047", fontWeight: 700, fontSize: 22, textAlign: "center", margin: "48px 0" }}>
+  You have already submitted your attendance for today.<br />
+  <span style={{ color: "#1976d2" }}>Come back again tomorrow!</span>
+
+  {submittedData && (
+  <div
+    style={{
+      marginTop: 32,
+      textAlign: "left",
+      fontSize: 16,
+      background: "#f9f9f9",
+      padding: 24,
+      borderRadius: 12,
+      border: "1px solid #ccc",
+      maxWidth: 700,
+    }}
+  >
+    <h3 style={{ color: "#1976d2", marginBottom: 20 }}>Your Submission:</h3>
+
+    {/* Site Deployments */}
+    <div style={{ marginBottom: 32 }}>
+      <h4 style={{ marginBottom: 12, color: "#333" }}>Site Deployments</h4>
+      {submittedData.site.length === 0 ? (
+        <div style={{ color: "#555" }}>None</div>
+      ) : (
+        submittedData.site.map((s, i) => (
+          <div key={i} style={{ marginBottom: 16, paddingLeft: 16 }}>
+            <div>
+              <strong style={{ color: "#333" }}>Client:</strong>{" "}
+              <span style={{ color: "#555" }}>{s.clientName}</span>
+            </div>
+            <div>
+              <strong style={{ color: "#333" }}>Location:</strong>{" "}
+              <span style={{ color: "#555" }}>{s.location}</span>
+            </div>
+            <div style={{ marginTop: 8, paddingLeft: 16 }}>
+              <div style={{ marginBottom: 6 }}>
+                <strong style={{ color: "#333" }}>Workers:</strong>
+                {s.workers.length > 0 ? (
+                  <ul style={{ paddingLeft: 20, color: "#555", marginTop: 4 }}>
+                    {s.workers.map((w, j) => (
+                      <li key={j}>{w}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <span style={{ marginLeft: 8 }}>None</span>
+                )}
+              </div>
+              <div>
+                <strong style={{ color: "#333" }}>Vehicles:</strong>
+                {s.vehicles.length > 0 ? (
+                  <ul style={{ paddingLeft: 20, color: "#555", marginTop: 4 }}>
+                    {s.vehicles.map((v, j) => (
+                      <li key={j}>{v}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <span style={{ marginLeft: 8 }}>None</span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+
+    {/* Fabrication Sites */}
+    <div style={{ marginBottom: 32 }}>
+      <h4 style={{ marginBottom: 12, color: "#333" }}>Fabrication Sites</h4>
+      {submittedData.fabrications.length === 0 ? (
+        <div style={{ color: "#555" }}>None</div>
+      ) : (
+        submittedData.fabrications.map((f, i) => (
+          <div key={i} style={{ marginBottom: 16, paddingLeft: 16 }}>
+            <div>
+              <strong style={{ color: "#333" }}>Client:</strong>{" "}
+              <span style={{ color: "#555" }}>{f.clientName}</span>
+            </div>
+            <div>
+              <strong style={{ color: "#333" }}>Location:</strong>{" "}
+              <span style={{ color: "#555" }}>{f.location}</span>
+            </div>
+            <div style={{ marginTop: 8, paddingLeft: 16 }}>
+              <strong style={{ color: "#333" }}>Workers:</strong>
+              {f.workers.length > 0 ? (
+                <ul style={{ paddingLeft: 20, color: "#555", marginTop: 4 }}>
+                  {f.workers.map((w, j) => (
+                    <li key={j}>{w}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span style={{ marginLeft: 8 }}>None</span>
+              )}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+
+    {/* Other Groups */}
+    <div style={{ marginBottom: 16 }}>
+      <strong style={{ color: "#333" }}>Tool Room:</strong>{" "}
+      <span style={{ color: "#555" }}>
+        {submittedData.toolRoomWorkers.length > 0
+          ? submittedData.toolRoomWorkers.join(", ")
+          : "None"}
+      </span>
+    </div>
+
+    <div style={{ marginBottom: 16 }}>
+      <strong style={{ color: "#333" }}>Utility:</strong>{" "}
+      <span style={{ color: "#555" }}>
+        {submittedData.utilityWorkers.length > 0
+          ? submittedData.utilityWorkers.join(", ")
+          : "None"}
+      </span>
+    </div>
+
+    <div style={{ marginBottom: 16 }}>
+      <strong style={{ color: "#333" }}>Maintenance Car:</strong>{" "}
+      <span style={{ color: "#555" }}>
+        {submittedData.maintenanceCarWorkers.length > 0
+          ? submittedData.maintenanceCarWorkers.join(", ")
+          : "None"}
+      </span>
+    </div>
+
+    <div style={{ marginBottom: 16 }}>
+      <strong style={{ color: "#333" }}>Absent:</strong>{" "}
+      <span style={{ color: "#555" }}>
+        {submittedData.absent.length > 0
+          ? submittedData.absent.join(", ")
+          : "None"}
+      </span>
+    </div>
+
+    <div>
+      <strong style={{ color: "#333" }}>Add-ons:</strong>{" "}
+      <span style={{ color: "#555" }}>
+        {submittedData.addOns ? submittedData.addOns : "None"}
+      </span>
+    </div>
+  </div>
+)}
+
+
+</div>
+
       ) : (
       <form onSubmit={handleSubmit}>
         {/* Site Category */}
         <h3 style={{ color: "#1976d2", marginTop: 24 }}>Site</h3>
         {sites.map((site, idx) => {
-          const unavailableWorkers = getAllSelectedWorkers({ type: "site", idx });
-          const unavailableVehicles = getAllSelectedVehicles(idx);
-          return (
-            <div key={idx} style={{ border: "1px solid #e3e8f7", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+  const unavailableWorkers = getAllSelectedWorkers({ type: "site", idx });
+  const unavailableVehicles = getAllSelectedVehicles(idx);
+  return (
+    <div
+      key={idx}
+      style={{
+        position: "relative",
+        border: "1px solid #e3e8f7",
+        borderRadius: 10,
+        padding: 16,
+        marginBottom: 16
+      }}
+    >
+      {sites.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeSite(idx)}
+          style={{
+            position: "absolute",
+            top: 6,
+            right: 10,
+            background: "transparent",
+            border: "none",
+            fontSize: 20,
+            color: "#d32f2f",
+            cursor: "pointer"
+          }}
+          title="Remove this site"
+        >
+          ×
+        </button>
+      )}
+
               <div style={{ marginBottom: 8 }}>
                 <label style={{ fontWeight: 600, color: "#1976d2" }}>Client Name: </label>
                 <input
@@ -215,9 +400,38 @@ export default function WorkersAttendanceUserPage({ user }) {
                 {/* Fabrication Category */}
         <h3 style={{ color: "#1976d2", marginTop: 24 }}>Fabrication</h3>
         {fabrications.map((fab, idx) => {
-          const unavailableWorkers = getAllSelectedWorkers({ type: "fab", idx });
-          return (
-            <div key={idx} style={{ border: "1px solid #e3e8f7", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+  const unavailableWorkers = getAllSelectedWorkers({ type: "fab", idx });
+  return (
+    <div
+      key={idx}
+      style={{
+        position: "relative",
+        border: "1px solid #e3e8f7",
+        borderRadius: 10,
+        padding: 16,
+        marginBottom: 16
+      }}
+    >
+      {fabrications.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeFabrication(idx)}
+          style={{
+            position: "absolute",
+            top: 6,
+            right: 10,
+            background: "transparent",
+            border: "none",
+            fontSize: 20,
+            color: "#d32f2f",
+            cursor: "pointer"
+          }}
+          title="Remove this fabrication"
+        >
+          ×
+        </button>
+      )}
+
               <div style={{ marginBottom: 8 }}>
                 <label style={{ fontWeight: 600, color: "#1976d2" }}>Client Name: </label>
                 <input
