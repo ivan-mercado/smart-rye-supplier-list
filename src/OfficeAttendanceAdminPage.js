@@ -9,11 +9,9 @@ import {
   onSnapshot,
   serverTimestamp,
   deleteDoc,
-  doc,
-  updateDoc,
-  getDocs,
-  setDoc
+  doc
 } from "firebase/firestore";
+
 import { db } from "./firebase";
 
 export default function OfficeAttendanceAdminPage({ user }) {
@@ -22,7 +20,7 @@ export default function OfficeAttendanceAdminPage({ user }) {
   const [selectedAbsent, setSelectedAbsent] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const resultsRef = useRef(null);
-  const navigate = useNavigate();
+//   const navigate = useNavigate();
 
 
   // Fetch office workers list
