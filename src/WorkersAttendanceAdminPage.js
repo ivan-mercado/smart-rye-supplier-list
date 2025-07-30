@@ -633,16 +633,7 @@ const handleSaveAsPicture = async (id, date) => {
             <div style={{ marginLeft: 16 }}>No fabrication data</div>
           )}
         </div>
-        <hr style={{ margin: "10px 0" }} />
-        <div>
-          <strong>Absent:</strong>
-          {record.absent && record.absent.length > 0 ? (
-            <ul style={{ margin: "2px 0 2px 18px" }}>
-              {record.absent.map(w => <li key={w}>{w}</li>)}
-            </ul>
-          ) : " None"}
-        </div>
-        <hr style={{ margin: "10px 0" }} />
+        
         <div>
           <strong>Utility:</strong>
           {record.utilityWorkers && record.utilityWorkers.length > 0 ? (
@@ -675,6 +666,15 @@ const handleSaveAsPicture = async (id, date) => {
           <div style={{ marginLeft: 16 }}>
             {record.addOns ? record.addOns : "None"}
           </div>
+        </div>
+        <hr style={{ margin: "10px 0" }} />
+        <div>
+          <strong>Absent:</strong>
+          {record.absent && record.absent.length > 0 ? (
+            <ul style={{ margin: "2px 0 2px 18px" }}>
+              {record.absent.map(w => <li key={w}>{w}</li>)}
+            </ul>
+          ) : " None"}
         </div>
       </div>
     </div>

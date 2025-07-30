@@ -11,6 +11,7 @@ import { Navigate } from "react-router-dom";
 import WorkersAttendanceAdminPage from './WorkersAttendanceAdminPage';
 import AdminAttendanceDashboard from './AdminAttendanceDashboard';
 import OJTAttendancePage from './OJTAttendancePage';
+import OfficeAttendanceAdminPage from './OfficeAttendanceAdminPage';
 import DepartmentSelectModal from './DepartmentSelectModal';
 import WorkersAttendancePage from './WorkersAttendancePage';
 import ResultsPage from './ResultsPage';
@@ -1087,6 +1088,8 @@ function App() {
         <Route path="/add" element={<AddSupplier onAdd={handleAddSupplier} />} />
         <Route path="/results" element={<ResultsPage user={user} />} />
         <Route path="/exams/:examId/take" element={<TakeExamPage user={user} />} />
+        <Route path="/office-attendance-admin" element={<OfficeAttendanceAdminPage user={user} />} />
+
         <Route
           path="/list"
           element={

@@ -117,6 +117,16 @@ const bottomNavItems = menuItems.slice(0, 3);
     Workers Attendance (Admin)
   </Link>
 )}
+{user?.role === "admin" && user?.department === "Human Resource" && (
+  <Link
+    to="/office-attendance-admin"
+    className="menu-sidebar-link"
+    style={{ marginTop: 10 }}
+  >
+    Office Attendance (Admin)
+  </Link>
+)}
+
 
 
         <div style={{ flexGrow: 1 }} />
