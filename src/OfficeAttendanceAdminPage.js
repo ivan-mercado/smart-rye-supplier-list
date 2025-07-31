@@ -21,6 +21,7 @@ export default function OfficeAttendanceAdminPage({ user }) {
   const [selectedAbsent, setSelectedAbsent] = useState([]);
   const [showWorkers, setShowWorkers] = useState(false);
   const [submissions, setSubmissions] = useState([]);
+  const [newWorkerName, setNewWorkerName] = useState("");
   const resultsRef = useRef(null);
 //   const navigate = useNavigate();
 
@@ -80,6 +81,19 @@ const deleteWorker = async (id) => {
   } catch (err) {
     console.error("Failed to delete worker:", err);
     alert("Error deleting worker.");
+  }
+};
+
+const addNewWorker = async () => {
+  if (!newWorkerName.trim()) return alert("Worker name cannot be empty");
+  try {
+    await addDoc(collection(db, "officeWorkers"), {
+      name: newWorkerName.trim(),
+    });
+    setNewWorkerName("");
+  } catch (err) {
+    console.error("Failed to add worker:", err);
+    alert("Error adding worker.");
   }
 };
 
@@ -256,6 +270,35 @@ const deleteWorker = async (id) => {
       )}
     </div>
   )}
+</div>
+{/* Add New Worker */}
+<div style={{ display: "flex", marginBottom: 16 }}>
+  <input
+    type="text"
+    placeholder="New worker name"
+    value={newWorkerName}
+    onChange={(e) => setNewWorkerName(e.target.value)}
+    style={{
+      flex: 1,
+      padding: "8px 10px",
+      borderRadius: 6,
+      border: "1px solid #ccc",
+      marginRight: 8,
+    }}
+  />
+  <button
+    onClick={addNewWorker}
+    style={{
+      padding: "8px 16px",
+      background: "#1976d2",
+      color: "#fff",
+      border: "none",
+      borderRadius: 6,
+      cursor: "pointer",
+    }}
+  >
+    Add
+  </button>
 </div>
 
 
