@@ -9,7 +9,8 @@ import {
   onSnapshot,
   serverTimestamp,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "firebase/firestore";
 
 import { db } from "./firebase";
@@ -18,6 +19,7 @@ export default function OfficeAttendanceAdminPage({ user }) {
   const [officeWorkers, setOfficeWorkers] = useState([]);
   const [selectedPresent, setSelectedPresent] = useState([]);
   const [selectedAbsent, setSelectedAbsent] = useState([]);
+  const [showWorkers, setShowWorkers] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const resultsRef = useRef(null);
 //   const navigate = useNavigate();
@@ -59,6 +61,28 @@ export default function OfficeAttendanceAdminPage({ user }) {
     setSelectedPresent([]);
     setSelectedAbsent([]);
   };
+
+  const updateWorker = async (worker) => {
+  if (!worker.name.trim()) return alert("Worker name cannot be empty");
+  try {
+    await updateDoc(doc(db, "officeWorkers", worker.id), { name: worker.name });
+    alert("Worker name updated!");
+  } catch (err) {
+    console.error("Failed to update worker:", err);
+    alert("Error updating worker.");
+  }
+};
+
+const deleteWorker = async (id) => {
+  if (!window.confirm("Delete this worker?")) return;
+  try {
+    await deleteDoc(doc(db, "officeWorkers", id));
+  } catch (err) {
+    console.error("Failed to delete worker:", err);
+    alert("Error deleting worker.");
+  }
+};
+
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this submission?")) {
@@ -135,6 +159,105 @@ export default function OfficeAttendanceAdminPage({ user }) {
 </button>
 
       <h2 style={{ color: "#1976d2", fontWeight: "bold" }}>Office Attendance (Admin)</h2>
+
+
+      {/* Show All Office Workers */}
+<div style={{ marginTop: 24, marginBottom: 16 }}>
+  <button
+    onClick={() => setShowWorkers((prev) => !prev)}
+    style={{
+      padding: "8px 16px",
+      background: "#1976d2",
+      color: "#fff",
+      border: "none",
+      borderRadius: 8,
+      cursor: "pointer",
+      fontWeight: 600,
+    }}
+  >
+    {showWorkers ? "Hide" : "Show All Office Workers"}
+  </button>
+
+  {showWorkers && (
+    <div
+      style={{
+        marginTop: 16,
+        padding: 16,
+        border: "1px solid #ccc",
+        borderRadius: 8,
+        background: "#f0f0f0",
+      }}
+    >
+      <h4 style={{ marginBottom: 12 }}>All Office Workers</h4>
+      {officeWorkers.length === 0 ? (
+        <p>No workers found.</p>
+      ) : (
+        officeWorkers.map((worker) => (
+          <div
+            key={worker.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 8,
+              background: "#fff",
+              padding: "8px 12px",
+              borderRadius: 6,
+              border: "1px solid #ddd",
+            }}
+          >
+            <input
+              type="text"
+              value={worker.name}
+              onChange={(e) =>
+                setOfficeWorkers((prev) =>
+                  prev.map((w) =>
+                    w.id === worker.id ? { ...w, name: e.target.value } : w
+                  )
+                )
+              }
+              style={{
+                flex: 1,
+                marginRight: 8,
+                padding: "6px 8px",
+                border: "1px solid #ccc",
+                borderRadius: 4,
+              }}
+            />
+            <button
+              onClick={() => updateWorker(worker)}
+              style={{
+                background: "#4caf50",
+                color: "#fff",
+                border: "none",
+                borderRadius: 4,
+                padding: "6px 10px",
+                marginRight: 8,
+                cursor: "pointer",
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => deleteWorker(worker.id)}
+              style={{
+                background: "#d32f2f",
+                color: "#fff",
+                border: "none",
+                borderRadius: 4,
+                padding: "6px 10px",
+                cursor: "pointer",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  )}
+</div>
+
 
       {/* Attendance Form */}
       <div
